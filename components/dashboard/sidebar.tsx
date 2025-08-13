@@ -22,11 +22,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
 const adminNavigation = [
-  {
-    name: 'Dashboard',
-    href: '/dashboard',
-    icon: Home,
-  },
+
   {
     name: 'Proprietà e Mappa',
     href: '/dashboard/map',
@@ -56,6 +52,11 @@ const adminNavigation = [
 
 const customerNavigation = [
   {
+    name: 'Proprietà',
+    href: '/dashboard/properties',
+    icon: Building2,
+  },
+  {
     name: 'Proprietà e Mappa',
     href: '/dashboard/map',
     icon: Map,
@@ -69,11 +70,6 @@ const customerNavigation = [
     name: 'Cambia Password',
     href: '/auth/change-password',
     icon: Lock,
-  },
-  {
-    name: 'Password Dimenticata',
-    href: '/auth/forgot-password',
-    icon: KeyRound,
   },
 ]
 

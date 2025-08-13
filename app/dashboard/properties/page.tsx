@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { useEffect, useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -13,13 +13,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,14 +29,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 import {
   Plus,
   Search,
@@ -47,153 +47,207 @@ import {
   Eye,
   MapPin,
   Building2,
-} from 'lucide-react'
-import Link from 'next/link'
-import { toast } from 'sonner'
+  Share2,
+} from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
+
+// Debounce function
+function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
 
 interface Property {
-  id: string
-  title: string
-  type: string
-  status: string
-  address: string
-  city: string
-  price: number
-  bedrooms?: number
-  bathrooms?: number
-  area?: number
-  createdAt: string
-  updatedAt: string
+  id: string;
+  title: string;
+  type: string;
+  status: string;
+  address: string;
+  city: string;
+  price: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  area?: number;
+  createdAt: string;
+  updatedAt: string;
   _count: {
-    favorites: number
-    inquiries: number
-  }
+    favorites: number;
+    inquiries: number;
+  };
+  latitude?: number;
+  longitude?: number;
 }
 
 export default function PropertiesPage() {
-  const { data: session } = useSession()
-  const [properties, setProperties] = useState<Property[]>([])
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [typeFilter, setTypeFilter] = useState('')
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null)
+  const { data: session } = useSession();
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(
+    null
+  );
 
-  const userRole = (session?.user as any)?.role || 'CUSTOMER'
-  const isAdmin = userRole === 'ADMIN'
+  const userRole = (session?.user as any)?.role || "CUSTOMER";
+  const isAdmin = userRole === "ADMIN";
+
+  // Function to share property location
+  const sharePropertyLocation = async (property: Property) => {
+    try {
+      // Create map location URL
+      const mapUrl = `/dashboard/map?lat=${property.latitude || 41.9028}&lng=${
+        property.longitude || 12.4964
+      }&zoom=15&propertyId=${property.id}`;
+      const fullUrl = `${window.location.origin}${mapUrl}`;
+
+      if (navigator.share) {
+        await navigator.share({
+          title: property.title,
+          text: `Guarda questa proprietà: ${property.title}`,
+          url: fullUrl,
+        });
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(fullUrl);
+        toast.success("Link della mappa copiato negli appunti!");
+      }
+    } catch (error) {
+      console.error("Error sharing property location:", error);
+      toast.error("Errore durante la condivisione");
+    }
+  };
+
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce((searchValue: string) => {
+      setSearchTerm(searchValue);
+    }, 300),
+    []
+  );
 
   useEffect(() => {
     const fetchProperties = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const response = await fetch('/api/properties')
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        
-        const data = await response.json()
-        setProperties(data.properties || [])
-        setFilteredProperties(data.properties || [])
-      } catch (error) {
-        console.error('Error fetching properties:', error)
-        toast.error('Errore nel caricamento delle proprietà')
-        setProperties([])
-        setFilteredProperties([])
-      } finally {
-        setLoading(false)
-      }
-    }
+        const response = await fetch("/api/properties");
 
-    fetchProperties()
-  }, [])
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setProperties(data.properties || []);
+        setFilteredProperties(data.properties || []);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+        toast.error("Errore nel caricamento delle proprietà");
+        setProperties([]);
+        setFilteredProperties([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
 
   useEffect(() => {
-    let filtered = properties
+    let filtered = properties;
 
     if (searchTerm) {
-      filtered = filtered.filter(property =>
-        property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.address.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      filtered = filtered.filter(
+        (property) =>
+          property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          property.address.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
-    if (statusFilter && statusFilter !== 'all') {
-      filtered = filtered.filter(property => property.status === statusFilter)
+    if (statusFilter && statusFilter !== "all") {
+      filtered = filtered.filter(
+        (property) => property.status === statusFilter
+      );
     }
 
-    if (typeFilter && typeFilter !== 'all') {
-      filtered = filtered.filter(property => property.type === typeFilter)
+    if (typeFilter && typeFilter !== "all") {
+      filtered = filtered.filter((property) => property.type === typeFilter);
     }
 
-    setFilteredProperties(filtered)
-  }, [properties, searchTerm, statusFilter, typeFilter])
+    setFilteredProperties(filtered);
+  }, [properties, searchTerm, statusFilter, typeFilter]);
 
   const getTypeLabel = (type: string) => {
     const types: { [key: string]: string } = {
-      APARTMENT: 'Appartamento',
-      HOUSE: 'Casa',
-      VILLA: 'Villa',
-      COMMERCIAL: 'Commerciale',
-      OFFICE: 'Ufficio',
-      LAND: 'Terreno',
-      GARAGE: 'Garage',
-    }
-    return types[type] || type
-  }
+      APARTMENT: "Appartamento",
+      HOUSE: "Casa",
+      VILLA: "Villa",
+      COMMERCIAL: "Commerciale",
+      OFFICE: "Ufficio",
+      LAND: "Terreno",
+      GARAGE: "Garage",
+    };
+    return types[type] || type;
+  };
 
   const getStatusLabel = (status: string) => {
     const statuses: { [key: string]: string } = {
-      FOR_SALE: 'In Vendita',
-      FOR_RENT: 'In Affitto',
-      SOLD: 'Venduto',
-      RENTED: 'Affittato',
-      DRAFT: 'Bozza',
-    }
-    return statuses[status] || status
-  }
+      FOR_SALE: "In Vendita",
+      FOR_RENT: "In Affitto",
+      SOLD: "Venduto",
+      RENTED: "Affittato",
+      DRAFT: "Bozza",
+    };
+    return statuses[status] || status;
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'FOR_SALE':
-        return 'bg-green-100 text-green-800'
-      case 'FOR_RENT':
-        return 'bg-blue-100 text-blue-800'
-      case 'SOLD':
-        return 'bg-gray-100 text-gray-800'
-      case 'RENTED':
-        return 'bg-purple-100 text-purple-800'
-      case 'DRAFT':
-        return 'bg-yellow-100 text-yellow-800'
+      case "FOR_SALE":
+        return "bg-green-100 text-green-800";
+      case "FOR_RENT":
+        return "bg-blue-100 text-blue-800";
+      case "SOLD":
+        return "bg-gray-100 text-gray-800";
+      case "RENTED":
+        return "bg-purple-100 text-purple-800";
+      case "DRAFT":
+        return "bg-yellow-100 text-yellow-800";
       default:
-        return 'bg-gray-100 text-gray-800'
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   const handleDeleteProperty = async (property: Property) => {
     try {
-      const response = await fetch(`/api/properties/${property.id}`, { 
-        method: 'DELETE' 
-      })
-      
+      const response = await fetch(`/api/properties/${property.id}`, {
+        method: "DELETE",
+      });
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
-      setProperties(prev => prev.filter(p => p.id !== property.id))
-      setFilteredProperties(prev => prev.filter(p => p.id !== property.id))
-      toast.success('Proprietà eliminata con successo')
+
+      setProperties((prev) => prev.filter((p) => p.id !== property.id));
+      setFilteredProperties((prev) => prev.filter((p) => p.id !== property.id));
+      toast.success("Proprietà eliminata con successo");
     } catch (error) {
-      console.error('Error deleting property:', error)
-      toast.error('Errore nell\'eliminazione della proprietà')
+      console.error("Error deleting property:", error);
+      toast.error("Errore nell'eliminazione della proprietà");
     } finally {
-      setDeleteDialogOpen(false)
-      setPropertyToDelete(null)
+      setDeleteDialogOpen(false);
+      setPropertyToDelete(null);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -203,7 +257,7 @@ export default function PropertiesPage() {
           <div className="h-64 bg-gray-200 rounded"></div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -212,10 +266,12 @@ export default function PropertiesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-[#203129]">
-            {isAdmin ? 'Gestione Proprietà' : 'Proprietà'}
+            {isAdmin ? "Gestione Proprietà" : "Proprietà"}
           </h1>
           <p className="text-gray-600 mt-1">
-            {isAdmin ? 'Gestisci tutte le proprietà della piattaforma' : 'Visualizza le proprietà disponibili'}
+            {isAdmin
+              ? "Gestisci tutte le proprietà della piattaforma"
+              : "Visualizza le proprietà disponibili"}
           </p>
         </div>
         <div className="flex space-x-3">
@@ -252,7 +308,7 @@ export default function PropertiesPage() {
                 type="search"
                 placeholder="Cerca proprietà..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => debouncedSearch(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -304,6 +360,7 @@ export default function PropertiesPage() {
                 <TableHead>Prezzo</TableHead>
                 <TableHead>Dettagli</TableHead>
                 <TableHead>Data</TableHead>
+                <TableHead className="w-[50px]">Condividi</TableHead>
                 {isAdmin && <TableHead className="w-[50px]"></TableHead>}
               </TableRow>
             </TableHeader>
@@ -331,7 +388,7 @@ export default function PropertiesPage() {
                   <TableCell>
                     <div className="font-semibold text-[#10c03e]">
                       €{property.price.toLocaleString()}
-                      {property.status === 'FOR_RENT' && (
+                      {property.status === "FOR_RENT" && (
                         <span className="text-xs text-gray-500">/mese</span>
                       )}
                     </div>
@@ -339,15 +396,41 @@ export default function PropertiesPage() {
                   <TableCell>
                     <div className="text-sm text-gray-600">
                       {property.bedrooms && `${property.bedrooms} cam`}
-                      {property.bedrooms && property.bathrooms && ' • '}
+                      {property.bedrooms && property.bathrooms && " • "}
                       {property.bathrooms && `${property.bathrooms} bagni`}
-                      {(property.bedrooms || property.bathrooms) && property.area && ' • '}
+                      {(property.bedrooms || property.bathrooms) &&
+                        property.area &&
+                        " • "}
                       {property.area && `${property.area}m²`}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="text-sm text-gray-600">
-                      {new Date(property.createdAt).toLocaleDateString('it-IT')}
+                      {new Date(property.createdAt).toLocaleDateString("it-IT")}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => sharePropertyLocation(property)}
+                        className="h-8 w-8 p-0"
+                        title="Condividi posizione mappa"
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        asChild
+                        className="h-8 w-8 p-0"
+                        title="Visualizza proprietà"
+                      >
+                        <Link href={`/dashboard/properties/${property.id}`}>
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                      </Button>
                     </div>
                   </TableCell>
                   {isAdmin && (
@@ -366,15 +449,17 @@ export default function PropertiesPage() {
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/properties/${property.id}/edit`}>
+                            <Link
+                              href={`/dashboard/properties/${property.id}/edit`}
+                            >
                               <Edit className="h-4 w-4 mr-2" />
                               Modifica
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => {
-                              setPropertyToDelete(property)
-                              setDeleteDialogOpen(true)
+                              setPropertyToDelete(property);
+                              setDeleteDialogOpen(true);
                             }}
                             className="text-red-600"
                           >
@@ -398,14 +483,17 @@ export default function PropertiesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Conferma Eliminazione</AlertDialogTitle>
             <AlertDialogDescription>
-              Sei sicuro di voler eliminare la proprietà "{propertyToDelete?.title}"?
-              Questa azione non può essere annullata.
+              Sei sicuro di voler eliminare la proprietà "
+              {propertyToDelete?.title}"? Questa azione non può essere
+              annullata.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Annulla</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => propertyToDelete && handleDeleteProperty(propertyToDelete)}
+              onClick={() =>
+                propertyToDelete && handleDeleteProperty(propertyToDelete)
+              }
               className="bg-red-600 hover:bg-red-700"
             >
               Elimina
@@ -414,5 +502,5 @@ export default function PropertiesPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }

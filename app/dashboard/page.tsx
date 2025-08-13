@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -34,6 +35,7 @@ export default function DashboardPage() {
   const { data: session } = useSession();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const userRole = (session?.user as any)?.role || "CUSTOMER";
   const isAdmin = userRole === "ADMIN";
@@ -99,6 +101,16 @@ export default function DashboardPage() {
         </div>
       </div>
     );
+  }
+
+  if (!session) {
+    router.push("/");
+    return null;
+  }
+
+  if (!isAdmin && userRole === "CUSTOMER") {
+    router.push("/dashboard/properties");
+    return null;
   }
 
   return (

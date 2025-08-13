@@ -5,9 +5,11 @@ class GoogleMapsLoader {
   private isLoading = false;
   private loadPromise: Promise<void> | null = null;
   private callbacks: (() => void)[] = [];
-  private mapInstances: Set<google.maps.Map> = new Set();
+  private mapInstances: Set<any> = new Set();
   private lastLoadTime = 0;
-  private readonly LOAD_COOLDOWN = 1000; // 1 second cooldown between loads
+  private readonly LOAD_COOLDOWN = 2000; // Increased to 2 seconds cooldown between loads
+  private readonly CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours cache
+  private lastCacheTime = 0;
 
   private constructor() {}
 
@@ -19,17 +21,28 @@ class GoogleMapsLoader {
   }
 
   async load(): Promise<void> {
-    // Implement cooldown to prevent rapid successive loads
+    // Check if we can use cached version
     const now = Date.now();
+    if (this.isLoaded && now - this.lastCacheTime < this.CACHE_DURATION) {
+      return Promise.resolve();
+    }
+
+    // Implement cooldown to prevent rapid successive loads
     if (now - this.lastLoadTime < this.LOAD_COOLDOWN) {
-      console.log('🚫 Google Maps load request throttled (cooldown active)');
+      console.log("🚫 Google Maps load request throttled (cooldown active)");
       if (this.loadPromise) {
         return this.loadPromise;
       }
     }
 
     // If already loaded, resolve immediately
-    if (this.isLoaded && typeof google !== 'undefined' && google.maps) {
+    if (
+      this.isLoaded &&
+      typeof window !== "undefined" &&
+      window.google &&
+      window.google.maps
+    ) {
+      this.lastCacheTime = now;
       return Promise.resolve();
     }
 
@@ -39,21 +52,34 @@ class GoogleMapsLoader {
     }
 
     // Check if script already exists in DOM
-    const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-    if (existingScript && typeof google !== 'undefined' && google.maps) {
+    const existingScript = document.querySelector(
+      'script[src*="maps.googleapis.com"]'
+    );
+    if (
+      existingScript &&
+      typeof window !== "undefined" &&
+      window.google &&
+      window.google.maps
+    ) {
       this.isLoaded = true;
+      this.lastCacheTime = now;
       return Promise.resolve();
     }
 
     // Start loading
     this.isLoading = true;
     this.lastLoadTime = now;
-    
+
     this.loadPromise = new Promise((resolve, reject) => {
       // If Google Maps is already available
-      if (typeof google !== 'undefined' && google.maps) {
+      if (
+        typeof window !== "undefined" &&
+        window.google &&
+        window.google.maps
+      ) {
         this.isLoaded = true;
         this.isLoading = false;
+        this.lastCacheTime = now;
         resolve();
         return;
       }
@@ -61,9 +87,14 @@ class GoogleMapsLoader {
       // If script exists but not loaded yet, wait for it
       if (existingScript) {
         const checkLoaded = () => {
-          if (typeof google !== 'undefined' && google.maps) {
+          if (
+            typeof window !== "undefined" &&
+            window.google &&
+            window.google.maps
+          ) {
             this.isLoaded = true;
             this.isLoading = false;
+            this.lastCacheTime = now;
             resolve();
           } else {
             setTimeout(checkLoaded, 100);
@@ -74,24 +105,28 @@ class GoogleMapsLoader {
       }
 
       // Create new script with optimized parameters
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&loading=async`;
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&loading=async&v=weekly`;
       script.async = true;
       script.defer = true;
 
       script.onload = () => {
-        this.isLoaded = true;
-        this.isLoading = false;
-        this.callbacks.forEach(callback => callback());
-        this.callbacks = [];
-        console.log('✅ Google Maps loaded successfully');
-        resolve();
+        // Wait a bit more to ensure Google Maps is fully initialized
+        setTimeout(() => {
+          this.isLoaded = true;
+          this.isLoading = false;
+          this.lastCacheTime = now;
+          this.callbacks.forEach((callback) => callback());
+          this.callbacks = [];
+          console.log("✅ Google Maps loaded successfully");
+          resolve();
+        }, 100);
       };
 
       script.onerror = (error) => {
         this.isLoading = false;
         this.loadPromise = null;
-        console.error('❌ Failed to load Google Maps:', error);
+        console.error("❌ Failed to load Google Maps:", error);
         reject(error);
       };
 
@@ -102,15 +137,19 @@ class GoogleMapsLoader {
   }
 
   // Register a map instance for tracking
-  registerMapInstance(map: google.maps.Map): void {
+  registerMapInstance(map: any): void {
     this.mapInstances.add(map);
-    console.log(`📍 Registered map instance. Total active maps: ${this.mapInstances.size}`);
+    console.log(
+      `📍 Registered map instance. Total active maps: ${this.mapInstances.size}`
+    );
   }
 
   // Unregister a map instance
-  unregisterMapInstance(map: google.maps.Map): void {
+  unregisterMapInstance(map: any): void {
     this.mapInstances.delete(map);
-    console.log(`📍 Unregistered map instance. Total active maps: ${this.mapInstances.size}`);
+    console.log(
+      `📍 Unregistered map instance. Total active maps: ${this.mapInstances.size}`
+    );
   }
 
   // Get number of active map instances
@@ -127,12 +166,25 @@ class GoogleMapsLoader {
   }
 
   isGoogleMapsLoaded(): boolean {
-    return this.isLoaded && typeof google !== 'undefined' && !!google.maps;
+    return (
+      this.isLoaded &&
+      typeof window !== "undefined" &&
+      window.google &&
+      !!window.google.maps
+    );
   }
 
   // Cleanup method to help with memory management
   cleanup(): void {
     this.mapInstances.clear();
+  }
+
+  // Force reload (useful for testing or when cache expires)
+  forceReload(): void {
+    this.isLoaded = false;
+    this.lastCacheTime = 0;
+    this.lastLoadTime = 0;
+    this.loadPromise = null;
   }
 }
 

@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import { googleMapsLoader } from "@/lib/google-maps-loader";
 import { googleMapsUsageTracker } from "@/lib/google-maps-usage-tracker";
+import { useSession } from "next-auth/react";
 
 interface Property {
   id: string;
@@ -58,16 +59,21 @@ interface GoogleMapProps {
   onMarkerClick: (property: Property) => void;
 }
 
-export function GoogleMap({
+export default function GoogleMap({
   properties,
   selectedProperty,
   onMarkerClick,
 }: GoogleMapProps) {
+  const { data: session } = useSession();
   const mapRef = useRef<HTMLDivElement>(null);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [markers, setMarkers] = useState<google.maps.Marker[]>([]);
-  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null);
+  const [map, setMap] = useState<any>(null);
+  const [infoWindow, setInfoWindow] = useState<any>(null);
   const [isMapVisible, setIsMapVisible] = useState(false);
+  const [markers, setMarkers] = useState<any[]>([]);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  const userRole = (session?.user as any)?.role || "CUSTOMER";
+  const isAdmin = userRole === "ADMIN";
 
   // Debounced marker update to reduce API calls
   const updateMarkersDebounced = useCallback(
@@ -174,8 +180,14 @@ export function GoogleMap({
                     ${property.area ? `<span>📐 ${property.area}m²</span>` : ""}
                   </div>
                   <p style="margin: 0 0 12px 0; color: #666; font-size: 13px; line-height: 1.4;">
-                    ${property.description ? property.description.substring(0, 100) : ""}${
-                property.description && property.description.length > 100 ? "..." : ""
+                    ${
+                      property.description
+                        ? property.description.substring(0, 100)
+                        : ""
+                    }${
+                property.description && property.description.length > 100
+                  ? "..."
+                  : ""
               }
                   </p>
                   <div style="border-top: 1px solid #e5e7eb; padding-top: 8px;">
@@ -209,7 +221,7 @@ export function GoogleMap({
           const position = marker.getPosition();
           if (position) bounds.extend(position);
         });
-        
+
         // Use fitBounds with padding to reduce API calls
         map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
 
@@ -230,27 +242,12 @@ export function GoogleMap({
       if (!mapRef.current || !googleMapsLoader.isGoogleMapsLoaded()) return;
 
       try {
-        const mapInstance = new google.maps.Map(mapRef.current, {
-          center: { lat: 41.9028, lng: 12.4964 }, // Rome center
-          zoom: 6,
-          styles: [
-            {
-              featureType: "poi",
-              elementType: "labels",
-              stylers: [{ visibility: "off" }],
-            },
-          ],
-          // Optimize map options to reduce API calls
-          gestureHandling: 'cooperative',
-          zoomControl: true,
-          mapTypeControl: false,
-          scaleControl: false,
-          streetViewControl: false,
-          rotateControl: false,
-          fullscreenControl: false,
-        });
+        const mapInstance = new (window as any).google.maps.Map(
+          mapRef.current,
+          mapOptions
+        );
 
-        const infoWindowInstance = new google.maps.InfoWindow({
+        const infoWindowInstance = new (window as any).google.maps.InfoWindow({
           maxWidth: 300,
         });
 
@@ -260,7 +257,7 @@ export function GoogleMap({
         setMap(mapInstance);
         setInfoWindow(infoWindowInstance);
         setIsMapVisible(true);
-        
+
         // Track map load for usage monitoring
         googleMapsUsageTracker.trackMapLoad();
 
@@ -277,10 +274,12 @@ export function GoogleMap({
     googleMapsLoader
       .load()
       .then(() => {
+        setIsInitializing(false);
         initMap();
       })
       .catch((error) => {
         console.error("Failed to load Google Maps:", error);
+        setIsInitializing(false);
       });
 
     // Cleanup on component unmount
@@ -310,7 +309,7 @@ export function GoogleMap({
         lat: selectedProperty.latitude,
         lng: selectedProperty.longitude,
       });
-      
+
       // Only adjust zoom if necessary
       const currentZoom = map.getZoom();
       if (!currentZoom || currentZoom < 14) {
@@ -319,13 +318,45 @@ export function GoogleMap({
     }
   }, [map, selectedProperty, isMapVisible]);
 
+  // Memoize the map options to prevent unnecessary re-renders
+  const mapOptions = useMemo(
+    () => ({
+      center: { lat: 41.9028, lng: 12.4964 }, // Rome center
+      zoom: 6,
+      styles: [
+        {
+          featureType: "poi",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }],
+        },
+      ],
+      // Optimize map options to reduce API calls
+      gestureHandling: "cooperative",
+      zoomControl: true,
+      mapTypeControl: false,
+      scaleControl: false,
+      streetViewControl: false,
+      rotateControl: false,
+      fullscreenControl: false,
+      // Additional optimizations
+      disableDefaultUI: false,
+      clickableIcons: false,
+      draggable: true,
+      scrollwheel: true,
+      // Reduce unnecessary API calls
+      maxZoom: 18,
+      minZoom: 3,
+    }),
+    []
+  );
+
   return (
     <div className="relative h-full">
       {/* Map Container */}
       <div ref={mapRef} className="w-full h-full" />
 
       {/* Loading State */}
-      {!map && (
+      {isInitializing && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10c03e] mx-auto mb-4"></div>
@@ -354,7 +385,12 @@ export function GoogleMap({
                   });
                 }
               });
-              map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
+              map.fitBounds(bounds, {
+                top: 50,
+                right: 50,
+                bottom: 50,
+                left: 50,
+              });
             }
           }}
         >
@@ -374,15 +410,17 @@ export function GoogleMap({
             </div>
           </CardContent>
         </Card>
-        
-        <Card className="shadow-md">
-          <CardContent className="p-2">
-            <div className="text-xs text-gray-600">
-              <div>API Usage: {googleMapsUsageTracker.getTodayUsage()}</div>
-              <div>Maps Attive: {googleMapsLoader.getActiveMapCount()}</div>
-            </div>
-          </CardContent>
-        </Card>
+
+        {isAdmin && (
+          <Card className="shadow-md">
+            <CardContent className="p-2">
+              <div className="text-xs text-gray-600">
+                <div>API Usage: {googleMapsUsageTracker.getTodayUsage()}</div>
+                <div>Maps Attive: {googleMapsLoader.getActiveMapCount()}</div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

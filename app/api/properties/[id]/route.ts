@@ -10,10 +10,10 @@ const updatePropertySchema = z.object({
   type: z.enum(['APARTMENT', 'HOUSE', 'VILLA', 'COMMERCIAL', 'OFFICE', 'LAND', 'GARAGE']).optional(),
   status: z.enum(['FOR_SALE', 'FOR_RENT', 'SOLD', 'RENTED', 'DRAFT']).optional(),
   listingStatus: z.enum(['ACTIVE', 'INACTIVE', 'PENDING', 'EXPIRED']).optional(),
-  address: z.string().min(1, 'Address is required').optional(),
-  city: z.string().min(1, 'City is required').optional(),
-  state: z.string().min(1, 'State is required').optional(),
-  zipCode: z.string().min(1, 'Zip code is required').optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zipCode: z.string().optional(),
   country: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
@@ -27,9 +27,9 @@ const updatePropertySchema = z.object({
   parking: z.number().int().min(0).optional(),
   features: z.array(z.string()).optional(),
   amenities: z.array(z.string()).optional(),
-  images: z.array(z.string().url()).optional(),
-  virtualTour: z.string().url().optional(),
-  videoUrl: z.string().url().optional(),
+  images: z.array(z.string()).optional(), // Removed URL validation to be more flexible
+  virtualTour: z.string().optional(), // Removed URL validation
+  videoUrl: z.string().optional(), // Removed URL validation
 })
 
 // GET /api/properties/[id] - Get property by ID

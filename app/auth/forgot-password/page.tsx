@@ -1,28 +1,34 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "next/navigation"
-import { ArrowLeft, Mail, Loader2 } from "lucide-react"
-import Link from "next/link"
-import { z } from "zod"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Mail, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { z } from "zod";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Inserisci un indirizzo email valido"),
-})
+});
 
-type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
+type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [successMessage, setSuccessMessage] = useState("")
-  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const router = useRouter();
 
   const {
     register,
@@ -31,45 +37,56 @@ export default function ForgotPasswordPage() {
     setError,
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
-  })
+  });
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     try {
-      setIsLoading(true)
-      setSuccessMessage("")
-      
-      // Simulate API call for password reset
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      setSuccessMessage(
-        "Se l'email esiste nel nostro sistema, riceverai un link per reimpostare la password."
-      )
-      
+      setIsLoading(true);
+      setSuccessMessage("");
+
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || "Si è verificato un errore durante l'invio dell'email"
+        );
+      }
+
+      setSuccessMessage(result.message);
+
       // Redirect to login after 3 seconds
       setTimeout(() => {
-        router.push("/auth/login")
-      }, 3000)
+        router.push("/auth/login");
+      }, 3000);
     } catch (error: any) {
       setError("root", {
-        message: error.message || "Si è verificato un errore durante l'invio dell'email"
-      })
+        message:
+          error.message ||
+          "Si è verificato un errore durante l'invio dell'email",
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex items-center justify-center mb-6">
-          <Link
-            href="/auth/login"
-            className="flex items-center text-[#10c03e] hover:text-[#0ea835] transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Torna al login
-          </Link>
-        </div>
+    <div className="sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="flex items-center justify-center mb-6">
+        <Link
+          href="/auth/login"
+          className="flex items-center text-[#10c03e] hover:text-[#0ea835] transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Torna al login
+        </Link>
       </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -124,7 +141,9 @@ export default function ForgotPasswordPage() {
             </form>
 
             <div className="text-center text-sm">
-              <span className="text-gray-600">Ti sei ricordato la password? </span>
+              <span className="text-gray-600">
+                Ti sei ricordato la password?{" "}
+              </span>
               <Link
                 href="/auth/login"
                 className="text-[#10c03e] hover:text-[#0ea835] font-medium"
@@ -148,5 +167,5 @@ export default function ForgotPasswordPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

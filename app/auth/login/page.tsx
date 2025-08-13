@@ -1,25 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { GoogleAuthButton } from "@/components/auth/google-auth-button"
-import { loginSchema, type LoginFormData } from "@/lib/auth"
-import { signIn } from "next-auth/react"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { GoogleAuthButton } from "@/components/auth/google-auth-button";
+import { loginSchema, type LoginFormData } from "@/lib/auth";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [successMessage, setSuccessMessage] = useState("")
-  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const router = useRouter();
 
   const {
     register,
@@ -28,38 +34,38 @@ export default function LoginPage() {
     setError,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-  })
+  });
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      setIsLoading(true)
-      setSuccessMessage("")
-      
+      setIsLoading(true);
+      setSuccessMessage("");
+
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
         redirect: false,
-      })
-      
+      });
+
       if (result?.error) {
         setError("root", {
-          message: "Credenziali non valide. Riprova."
-        })
+          message: "Credenziali non valide. Riprova.",
+        });
       } else {
-        setSuccessMessage("Accesso effettuato con successo!")
-        // Redirect to dashboard or home page after 1 second
+        setSuccessMessage("Accesso effettuato con successo!");
+        // Redirect to properties page after 1 second
         setTimeout(() => {
-          router.push("/dashboard")
-        }, 1000)
+          router.push("/dashboard/properties");
+        }, 1000);
       }
     } catch (error: any) {
       setError("root", {
-        message: error.message || "Credenziali non valide. Riprova."
-      })
+        message: error.message || "Credenziali non valide. Riprova.",
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Card>
@@ -121,8 +127,8 @@ export default function LoginPage() {
                 type="button"
                 className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 focus:outline-none"
                 onClick={(e) => {
-                  e.preventDefault()
-                  setShowPassword(!showPassword)
+                  e.preventDefault();
+                  setShowPassword(!showPassword);
                 }}
                 tabIndex={-1}
               >
@@ -170,5 +176,5 @@ export default function LoginPage() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -6,16 +6,25 @@ export default withAuth(
     const token = req.nextauth.token
     const isAuth = !!token
     const isAuthPage = req.nextUrl.pathname.startsWith('/auth')
-    const isDashboard = req.nextUrl.pathname.startsWith('/dashboard')
+    const isDashboard = req.nextUrl.pathname.startsWith('/dashboard/map')
     const isApiRoute = req.nextUrl.pathname.startsWith('/api')
+    
+    // Allow change password and forgot password pages for authenticated users
+    const isPasswordManagementPage = req.nextUrl.pathname.includes('/change-password') || 
+                                   req.nextUrl.pathname.includes('/forgot-password')
 
     // Allow API routes to handle their own auth
     if (isApiRoute) {
       return NextResponse.next()
     }
 
-    // Redirect authenticated users away from auth pages
-    if (isAuthPage && isAuth) {
+    // Allow authenticated users to access password management pages
+    if (isAuthPage && isAuth && isPasswordManagementPage) {
+      return NextResponse.next()
+    }
+
+    // Redirect authenticated users away from other auth pages (login, signup)
+    if (isAuthPage && isAuth && !isPasswordManagementPage) {
       return NextResponse.redirect(new URL('/dashboard', req.url))
     }
 

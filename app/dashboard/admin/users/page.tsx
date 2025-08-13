@@ -41,9 +41,7 @@ import {
   Search,
   Filter,
   MoreHorizontal,
-  Edit,
   Trash2,
-  Eye,
   Users,
   UserPlus,
 } from 'lucide-react'
@@ -280,26 +278,16 @@ export default function UsersManagementPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          <Eye className="h-4 w-4 mr-2" />
-                          Visualizza
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setUserToDelete(user)
+                            setDeleteDialogOpen(true)
+                          }}
+                          className="text-red-600"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Elimina
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Modifica
-                        </DropdownMenuItem>
-                        {user.id !== currentUserId && (
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setUserToDelete(user)
-                              setDeleteDialogOpen(true)
-                            }}
-                            className="text-red-600"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Elimina
-                          </DropdownMenuItem>
-                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

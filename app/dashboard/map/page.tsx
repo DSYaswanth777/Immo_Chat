@@ -1,170 +1,160 @@
-'use client';
-import { useEffect, useState, useCallback } from 'react'
-import { Input } from '@/components/ui/input'
-import { Search } from 'lucide-react';
+"use client";
+import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { GoogleMap } from '@/components/dashboard/google-map'
-import { PropertyCard } from '@/components/dashboard/property-card'
-import { useGoogleMapsUsage } from '@/lib/google-maps-usage-tracker'
-import { useSession } from 'next-auth/react'
-import Link from 'next/link'
+} from "@/components/ui/select";
+import GoogleMap from "@/components/dashboard/google-map";
+import { PropertyCard } from "@/components/dashboard/property-card";
+import { useGoogleMapsUsage } from "@/lib/google-maps-usage-tracker";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 interface Property {
-  id: string
-  title: string
-  description?: string
-  type: string
-  status: string
-  listingStatus: string
-  address: string
-  city: string
-  state: string
-  zipCode: string
-  country: string
-  price: number
-  bedrooms?: number
-  bathrooms?: number
-  area?: number
-  lotSize?: number
-  yearBuilt?: number
-  floors?: number
-  parking?: number
-  latitude?: number
-  longitude?: number
-  features: string[]
-  amenities: string[]
-  images: string[]
-  virtualTour?: string
-  videoUrl?: string
-  createdAt: string
-  updatedAt: string
-  publishedAt?: string
+  id: string;
+  title: string;
+  description?: string;
+  type: string;
+  status: string;
+  listingStatus: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  price: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  area?: number;
+  lotSize?: number;
+  yearBuilt?: number;
+  floors?: number;
+  parking?: number;
+  latitude?: number;
+  longitude?: number;
+  features: string[];
+  amenities: string[];
+  images: string[];
+  virtualTour?: string;
+  videoUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
   owner: {
-    id: string
-    name: string
-    email: string
-    phone?: string
-    company?: string
-    image?: string
-  }
+    id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    company?: string;
+    image?: string;
+  };
   _count: {
-    favorites: number
-    inquiries: number
-  }
+    favorites: number;
+    inquiries: number;
+  };
 }
 
 export default function MapPage() {
-  const { data: session } = useSession()
-  const [properties, setProperties] = useState<Property[]>([])
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>([])
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
+  const { data: session } = useSession();
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    type: '',
-    status: '',
-    minPrice: '',
-    maxPrice: '',
-    bedrooms: '',
-    city: '',
-  })
+    type: "",
+    status: "",
+    minPrice: "",
+    maxPrice: "",
+    bedrooms: "",
+    city: "",
+  });
 
-  const { getTodayUsage, getMonthlyEstimate } = useGoogleMapsUsage()
-  const userRole = (session?.user as any)?.role || 'CUSTOMER'
-  const isAdmin = userRole === 'ADMIN'
+  const { getTodayUsage, getMonthlyEstimate } = useGoogleMapsUsage();
+  const userRole = (session?.user as any)?.role || "CUSTOMER";
+  const isAdmin = userRole === "ADMIN";
 
   useEffect(() => {
     const fetchProperties = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const response = await fetch('/api/properties')
-        
+        const response = await fetch("/api/properties");
+
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
-        const data = await response.json()
-        setProperties(data.properties || [])
-        setFilteredProperties(data.properties || [])
+
+        const data = await response.json();
+        setProperties(data.properties || []);
+        setFilteredProperties(data.properties || []);
       } catch (error) {
-        console.error('Error fetching properties:', error)
-        setProperties([])
-        setFilteredProperties([])
+        console.error("Error fetching properties:", error);
+        setProperties([]);
+        setFilteredProperties([]);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchProperties()
-  }, [])
-
-  const handleSearch = useCallback(() => {
-    let filtered = properties
-
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(property =>
-        property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.address.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
-
-    // Type filter
-    if (filters.type && filters.type !== 'all') {
-      filtered = filtered.filter(property => property.type === filters.type)
-    }
-
-    // Status filter
-    if (filters.status && filters.status !== 'all') {
-      filtered = filtered.filter(property => property.status === filters.status)
-    }
-
-    // Price filters
-    if (filters.minPrice) {
-      filtered = filtered.filter(property => property.price >= parseInt(filters.minPrice))
-    }
-    if (filters.maxPrice) {
-      filtered = filtered.filter(property => property.price <= parseInt(filters.maxPrice))
-    }
-
-    // Bedrooms filter
-    if (filters.bedrooms) {
-      filtered = filtered.filter(property => 
-        property.bedrooms && property.bedrooms >= parseInt(filters.bedrooms)
-      )
-    }
-
-    // City filter
-    if (filters.city) {
-      filtered = filtered.filter(property =>
-        property.city.toLowerCase().includes(filters.city.toLowerCase())
-      )
-    }
-
-    setFilteredProperties(filtered)
-  }, [properties, searchTerm, filters])
+    fetchProperties();
+  }, []);
 
   useEffect(() => {
-    handleSearch()
-  }, [handleSearch])
+    let filtered = properties;
+
+    if (filters.type && filters.type !== "all") {
+      filtered = filtered.filter((property) => property.type === filters.type);
+    }
+
+    if (filters.status && filters.status !== "all") {
+      filtered = filtered.filter(
+        (property) => property.status === filters.status
+      );
+    }
+
+    if (filters.minPrice) {
+      filtered = filtered.filter(
+        (property) => property.price >= parseInt(filters.minPrice)
+      );
+    }
+
+    if (filters.maxPrice) {
+      filtered = filtered.filter(
+        (property) => property.price <= parseInt(filters.maxPrice)
+      );
+    }
+
+    if (filters.bedrooms) {
+      filtered = filtered.filter(
+        (property) =>
+          property.bedrooms && property.bedrooms >= parseInt(filters.bedrooms)
+      );
+    }
+
+    if (filters.city) {
+      filtered = filtered.filter((property) =>
+        property.city.toLowerCase().includes(filters.city.toLowerCase())
+      );
+    }
+
+    setFilteredProperties(filtered);
+  }, [properties, filters]);
 
   const handleMarkerClick = (property: Property) => {
-    setSelectedProperty(property)
-  }
+    setSelectedProperty(property);
+  };
 
   if (loading) {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#10c03e]"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -173,19 +163,11 @@ export default function MapPage() {
       <div className="w-1/3 bg-white border-r flex flex-col">
         {/* Search and Filters */}
         <div className="p-4 border-b space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              type="search"
-              placeholder="Cerca proprietà..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
           <div className="grid grid-cols-2 gap-2">
-            <Select value={filters.type} onValueChange={(value) => setFilters({...filters, type: value})}>
+            <Select
+              value={filters.type}
+              onValueChange={(value) => setFilters({ ...filters, type: value })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
@@ -198,7 +180,12 @@ export default function MapPage() {
               </SelectContent>
             </Select>
 
-            <Select value={filters.status} onValueChange={(value) => setFilters({...filters, status: value})}>
+            <Select
+              value={filters.status}
+              onValueChange={(value) =>
+                setFilters({ ...filters, status: value })
+              }
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -215,13 +202,17 @@ export default function MapPage() {
               type="number"
               placeholder="Prezzo min"
               value={filters.minPrice}
-              onChange={(e) => setFilters({...filters, minPrice: e.target.value})}
+              onChange={(e) =>
+                setFilters({ ...filters, minPrice: e.target.value })
+              }
             />
             <Input
               type="number"
               placeholder="Prezzo max"
               value={filters.maxPrice}
-              onChange={(e) => setFilters({...filters, maxPrice: e.target.value})}
+              onChange={(e) =>
+                setFilters({ ...filters, maxPrice: e.target.value })
+              }
             />
           </div>
         </div>
@@ -236,7 +227,7 @@ export default function MapPage() {
               <span className="text-gray-500">
                 API Usage Today: {getTodayUsage()}
               </span>
-              <Link 
+              <Link
                 href="/dashboard/analytics/google-maps"
                 className="text-[#10c03e] hover:underline"
               >
@@ -268,5 +259,5 @@ export default function MapPage() {
         />
       </div>
     </div>
-  )
+  );
 }
