@@ -9,78 +9,71 @@ import {
   Home,
   Building2,
   Users,
-  Heart,
-  MessageSquare,
   Settings,
-  BarChart3,
   Map,
   Plus,
   Menu,
   X,
+  User,
+  Lock,
+  KeyRound,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
-const navigation = [
+const adminNavigation = [
   {
     name: 'Dashboard',
     href: '/dashboard',
     icon: Home,
-    roles: ['ADMIN', 'CUSTOMER'],
   },
   {
-    name: 'Mappa Proprietà',
+    name: 'Proprietà e Mappa',
     href: '/dashboard/map',
     icon: Map,
-    roles: ['ADMIN', 'CUSTOMER'],
-  },
-  {
-    name: 'Le Mie Proprietà',
-    href: '/dashboard/properties',
-    icon: Building2,
-    roles: ['ADMIN', 'CUSTOMER'],
   },
   {
     name: 'Aggiungi Proprietà',
     href: '/dashboard/properties/new',
     icon: Plus,
-    roles: ['ADMIN'],
   },
   {
-    name: 'Preferiti',
-    href: '/dashboard/favorites',
-    icon: Heart,
-    roles: ['ADMIN', 'CUSTOMER'],
-  },
-  {
-    name: 'Richieste',
-    href: '/dashboard/inquiries',
-    icon: MessageSquare,
-    roles: ['ADMIN', 'CUSTOMER'],
-  },
-  {
-    name: 'Analytics',
-    href: '/dashboard/analytics',
-    icon: BarChart3,
-    roles: ['ADMIN'],
+    name: 'Gestione Proprietà',
+    href: '/dashboard/properties',
+    icon: Building2,
   },
   {
     name: 'Google Maps Usage',
     href: '/dashboard/analytics/google-maps',
     icon: Map,
-    roles: ['ADMIN'],
   },
   {
     name: 'Gestione Utenti',
     href: '/dashboard/admin/users',
     icon: Users,
-    roles: ['ADMIN'],
+  },
+]
+
+const customerNavigation = [
+  {
+    name: 'Proprietà e Mappa',
+    href: '/dashboard/map',
+    icon: Map,
   },
   {
-    name: 'Impostazioni',
-    href: '/dashboard/settings',
-    icon: Settings,
-    roles: ['ADMIN', 'CUSTOMER'],
+    name: 'Profilo',
+    href: '/dashboard/profile',
+    icon: User,
+  },
+  {
+    name: 'Cambia Password',
+    href: '/auth/change-password',
+    icon: Lock,
+  },
+  {
+    name: 'Password Dimenticata',
+    href: '/auth/forgot-password',
+    icon: KeyRound,
   },
 ]
 
@@ -90,10 +83,9 @@ export function Sidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const userRole = (session?.user as any)?.role || 'CUSTOMER'
+  const isAdmin = userRole === 'ADMIN'
 
-  const filteredNavigation = navigation.filter(item => 
-    item.roles.includes(userRole)
-  )
+  const navigation = isAdmin ? adminNavigation : customerNavigation
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -144,7 +136,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-6 space-y-2">
-        {filteredNavigation.map((item) => {
+        {navigation.map((item) => {
           const isActive = pathname === item.href
           return (
             <Link

@@ -12,6 +12,7 @@ import {
 import { GoogleMap } from '@/components/dashboard/google-map'
 import { PropertyCard } from '@/components/dashboard/property-card'
 import { useGoogleMapsUsage } from '@/lib/google-maps-usage-tracker'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 interface Property {
@@ -59,6 +60,7 @@ interface Property {
 }
 
 export default function MapPage() {
+  const { data: session } = useSession()
   const [properties, setProperties] = useState<Property[]>([])
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([])
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null)
@@ -74,6 +76,8 @@ export default function MapPage() {
   })
 
   const { getTodayUsage, getMonthlyEstimate } = useGoogleMapsUsage()
+  const userRole = (session?.user as any)?.role || 'CUSTOMER'
+  const isAdmin = userRole === 'ADMIN'
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -227,17 +231,19 @@ export default function MapPage() {
           <p className="text-sm text-gray-600">
             {filteredProperties.length} proprietà trovate
           </p>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-500">
-              API Usage Today: {getTodayUsage()}
-            </span>
-            <Link 
-              href="/dashboard/analytics/google-maps"
-              className="text-[#10c03e] hover:underline"
-            >
-              View Analytics
-            </Link>
-          </div>
+          {isAdmin && (
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-gray-500">
+                API Usage Today: {getTodayUsage()}
+              </span>
+              <Link 
+                href="/dashboard/analytics/google-maps"
+                className="text-[#10c03e] hover:underline"
+              >
+                View Analytics
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Property List */}

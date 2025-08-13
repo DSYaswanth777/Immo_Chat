@@ -212,10 +212,10 @@ export default function PropertiesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-[#203129]">
-            {isAdmin ? 'Gestione Proprietà' : 'Le Mie Proprietà'}
+            {isAdmin ? 'Gestione Proprietà' : 'Proprietà'}
           </h1>
           <p className="text-gray-600 mt-1">
-            Gestisci e monitora le tue proprietà immobiliari
+            {isAdmin ? 'Gestisci tutte le proprietà della piattaforma' : 'Visualizza le proprietà disponibili'}
           </p>
         </div>
         <div className="flex space-x-3">
@@ -225,12 +225,14 @@ export default function PropertiesPage() {
               Visualizza Mappa
             </Button>
           </Link>
-          <Link href="/dashboard/properties/new">
-            <Button className="bg-[#10c03e] hover:bg-[#0ea835]">
-              <Plus className="h-4 w-4 mr-2" />
-              Aggiungi Proprietà
-            </Button>
-          </Link>
+          {isAdmin && (
+            <Link href="/dashboard/properties/new">
+              <Button className="bg-[#10c03e] hover:bg-[#0ea835]">
+                <Plus className="h-4 w-4 mr-2" />
+                Aggiungi Proprietà
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -301,9 +303,8 @@ export default function PropertiesPage() {
                 <TableHead>Stato</TableHead>
                 <TableHead>Prezzo</TableHead>
                 <TableHead>Dettagli</TableHead>
-                <TableHead>Statistiche</TableHead>
                 <TableHead>Data</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
+                {isAdmin && <TableHead className="w-[50px]"></TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -345,49 +346,45 @@ export default function PropertiesPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm">
-                      <div>❤️ {property._count.favorites} preferiti</div>
-                      <div>💬 {property._count.inquiries} richieste</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
                     <div className="text-sm text-gray-600">
                       {new Date(property.createdAt).toLocaleDateString('it-IT')}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/properties/${property.id}`}>
-                            <Eye className="h-4 w-4 mr-2" />
-                            Visualizza
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/properties/${property.id}/edit`}>
-                            <Edit className="h-4 w-4 mr-2" />
-                            Modifica
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setPropertyToDelete(property)
-                            setDeleteDialogOpen(true)
-                          }}
-                          className="text-red-600"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Elimina
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+                  {isAdmin && (
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                            <Link href={`/dashboard/properties/${property.id}`}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              Visualizza
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href={`/dashboard/properties/${property.id}/edit`}>
+                              <Edit className="h-4 w-4 mr-2" />
+                              Modifica
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setPropertyToDelete(property)
+                              setDeleteDialogOpen(true)
+                            }}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Elimina
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

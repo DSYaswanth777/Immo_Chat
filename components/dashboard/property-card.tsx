@@ -8,13 +8,9 @@ import {
   Bed, 
   Bath, 
   Square, 
-  Heart,
-  Eye,
   Phone,
   Mail,
-  Euro,
 } from 'lucide-react'
-import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 interface Property {
@@ -117,8 +113,6 @@ export function PropertyCard({ property, isSelected, onClick }: PropertyCardProp
     >
       <CardContent className="p-3">
         <div className="flex space-x-3">
-
-
           {/* Property Details */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between mb-1">
@@ -162,7 +156,7 @@ export function PropertyCard({ property, isSelected, onClick }: PropertyCardProp
               )}
             </div>
 
-            {/* Property Type and Actions */}
+            {/* Property Type and Contact */}
             <div className="flex items-center justify-between">
               <Badge variant="outline" className="text-xs">
                 {getTypeLabel(property.type)}

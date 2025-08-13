@@ -50,8 +50,6 @@ model User {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   accounts      Account[]
-  favorites     Favorite[]
-  inquiries     Inquiry[]
   properties    Property[]
   sessions      Session[]
 }
@@ -98,43 +96,11 @@ model Property {
   updatedAt       DateTime       @updatedAt
   publishedAt     DateTime?
   ownerId         String
-  favorites       Favorite[]
-  inquiries       Inquiry[]
   owner           User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([city, type, status])
   @@index([price, type])
   @@index([ownerId])
-}
-
-model Favorite {
-  id         String   @id @default(cuid())
-  userId     String
-  propertyId String
-  createdAt  DateTime @default(now())
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, propertyId])
-  @@index([propertyId], map: "Favorite_propertyId_fkey")
-}
-
-model Inquiry {
-  id         String   @id @default(cuid())
-  name       String
-  email      String
-  phone      String?
-  message    String   @db.Text
-  propertyId String
-  userId     String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  user       User?    @relation(fields: [userId], references: [id])
-
-  @@index([propertyId])
-  @@index([email])
-  @@index([userId], map: "Inquiry_userId_fkey")
 }
 
 enum UserRole {
