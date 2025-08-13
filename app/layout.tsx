@@ -4,6 +4,8 @@ import type React from 'react'
 import type { Metadata } from 'next'
 import { Open_Sans } from 'next/font/google'
 import './globals.css'
+import { Providers } from '@/components/providers/session-provider'
+import { Toaster } from 'sonner'
 
 const openSans = Open_Sans({
   subsets: ['latin'],
@@ -26,7 +28,10 @@ export default function RootLayout({
     <html lang="it" suppressHydrationWarning>
       {/* Move className to body to isolate possible mismatch */}
       <body className={openSans.className} suppressHydrationWarning>
-        {children}
+        <Providers>
+          {children}
+          <Toaster position="top-right" />
+        </Providers>
       </body>
     </html>
   )

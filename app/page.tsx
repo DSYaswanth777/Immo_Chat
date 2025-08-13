@@ -26,55 +26,15 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { FloatingWhatsApp } from "@/components/floating-whatsapp";
+import { HomepageHeader } from "@/components/homepage-header";
 
 export default function ImmochatLanding() {
   return (
     <div className="min-h-screen bg-white">
       <FloatingWhatsApp />
 
-      {/* Header */}
-      <header className="border-b bg-white sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Image
-              src="/images/logo.png"
-              alt="Professionista Immobiliare"
-              width={100}
-              height={20}
-              className="rounded-lg"
-            />
-          </div>
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              href="#servizi"
-              className="text-[#203129] hover:text-[#10c03e] transition-colors"
-            >
-              Servizi
-            </Link>
-            <Link
-              href="#caratteristiche"
-              className="text-[#203129] hover:text-[#10c03e] transition-colors"
-            >
-              Caratteristiche
-            </Link>
-            <Link
-              href="#come-funziona"
-              className="text-[#203129] hover:text-[#10c03e] transition-colors"
-            >
-              Come Funziona
-            </Link>
-            <Link
-              href="#contatti"
-              className="text-[#203129] hover:text-[#10c03e] transition-colors"
-            >
-              Contatti
-            </Link>
-          </nav>
-          <Button className="bg-[#10c03e] hover:bg-[#0ea835] text-white">
-            Registrati come Agenzia
-          </Button>
-        </div>
-      </header>
+      {/* Dynamic Header */}
+      <HomepageHeader />
 
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-br from-[#203129] to-[#2a4233]">
@@ -94,12 +54,14 @@ export default function ImmochatLanding() {
                 piattaforma di messaggistica più popolare d'Italia.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  size="lg"
-                  className="bg-[#10c03e] hover:bg-[#0ea835] text-white"
-                >
-                  Inizia Prova Gratuita
-                </Button>
+                <Link href="/auth/signup">
+                  <Button
+                    size="lg"
+                    className="bg-[#10c03e] hover:bg-[#0ea835] text-white w-full sm:w-auto"
+                  >
+                    Inizia Prova Gratuita
+                  </Button>
+                </Link>
                 <Button
                   size="lg"
                   variant="outline"
@@ -613,12 +575,14 @@ export default function ImmochatLanding() {
                 <div className="w-3 h-3 bg-[#10c03e] rounded-full"></div>
               </div>
             </div>
-            <Button
-              size="lg"
-              className="bg-[#10c03e] hover:bg-[#0ea835] text-white"
-            >
-              Inizia Subito - È Gratuito
-            </Button>
+            <Link href="/auth/signup">
+              <Button
+                size="lg"
+                className="bg-[#10c03e] hover:bg-[#0ea835] text-white"
+              >
+                Inizia Subito - È Gratuito
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -635,12 +599,14 @@ export default function ImmochatLanding() {
             attività.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-[#10c03e] hover:bg-[#0ea835] text-white"
-            >
-              Inizia la Tua Prova Gratuita
-            </Button>
+            <Link href="/auth/signup">
+              <Button
+                size="lg"
+                className="bg-[#10c03e] hover:bg-[#0ea835] text-white w-full sm:w-auto"
+              >
+                Inizia la Tua Prova Gratuita
+              </Button>
+            </Link>
             <Button
               size="lg"
               variant="outline"
