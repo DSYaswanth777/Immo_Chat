@@ -18,6 +18,7 @@ import {
   TrendingUp,
   Plus,
   MapPin,
+  User,
 } from "lucide-react";
 import Link from "next/link";
 
