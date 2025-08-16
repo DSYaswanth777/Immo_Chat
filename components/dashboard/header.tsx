@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { Search, LogOut, User, Lock } from "lucide-react";
+import { Search, LogOut, User, Lock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,16 +14,64 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { useMemo } from "react";
 
 export function Header() {
-  const { data: session } = useSession();
-  const userRole = (session?.user as any)?.role || "CUSTOMER";
-  const isAdmin = userRole === "ADMIN";
+  const { data: session, status } = useSession();
+  
+  // Memoize user data to prevent unnecessary re-renders
+  const userData = useMemo(() => {
+    if (!session?.user) return null;
+    
+    const user = session.user as any;
+    return {
+      name: user.name || "User",
+      email: user.email || "",
+      image: user.image || "",
+      role: user.role || "CUSTOMER",
+      initials: user.name?.charAt(0)?.toUpperCase() || "U",
+      isGoogleUser: user.image?.includes("googleusercontent.com") || false
+    };
+  }, [session?.user]);
+
+  const isAdmin = userData?.role === "ADMIN";
 
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" });
   };
+
+  // Loading state
+  if (status === "loading") {
+    return (
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex-1 max-w-md">
+            <Skeleton className="h-10 w-full max-w-md" />
+          </div>
+          <div className="flex items-center space-x-4 ml-auto">
+            <Skeleton className="h-10 w-10 rounded-full" />
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  // Not authenticated
+  if (!session || !userData) {
+    return (
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4 ml-auto">
+            <Link href="/auth/login">
+              <Button variant="outline">Accedi</Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4">
@@ -53,11 +101,12 @@ export function Header() {
               >
                 <Avatar className="h-10 w-10">
                   <AvatarImage
-                    src={session?.user?.image || ""}
-                    alt={session?.user?.name || "User"}
+                    src={userData.image}
+                    alt={userData.name}
+                    loading="lazy"
                   />
-                  <AvatarFallback className="bg-[#10c03e] text-white">
-                    {session?.user?.name?.charAt(0) || "U"}
+                  <AvatarFallback className="bg-emerald-600 text-white font-semibold">
+                    {userData.initials}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -66,31 +115,31 @@ export function Header() {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    {session?.user?.name || "User"}
+                    {userData.name}
                   </p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    {session?.user?.email}
+                    {userData.email}
                   </p>
                   <Badge
-                    variant={userRole === "ADMIN" ? "default" : "secondary"}
+                    variant={userData.role === "ADMIN" ? "default" : "secondary"}
                     className="text-xs w-fit mt-1"
                   >
-                    {userRole}
+                    {userData.role}
                   </Badge>
                   {/* Show if user signed in with Google */}
-                  {session?.user?.image &&
-                    session.user.image.includes("googleusercontent.com") && (
-                      <div className="flex items-center mt-1">
-                        <img
-                          src={session.user.image}
-                          alt="Google Profile"
-                          className="w-4 h-4 rounded-full mr-1"
-                        />
-                        <span className="text-xs text-gray-500">
-                          Google Account
-                        </span>
-                      </div>
-                    )}
+                  {userData.isGoogleUser && (
+                    <div className="flex items-center mt-1">
+                      <img
+                        src={userData.image}
+                        alt="Google Profile"
+                        className="w-4 h-4 rounded-full mr-1"
+                        loading="lazy"
+                      />
+                      <span className="text-xs text-gray-500">
+                        Google Account
+                      </span>
+                    </div>
+                  )}
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

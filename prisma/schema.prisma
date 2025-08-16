@@ -62,6 +62,24 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model OTP {
+  id        String   @id @default(cuid())
+  email     String
+  otp       String
+  type      OTPType
+  expires   DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email, type])
+}
+
+enum OTPType {
+  PASSWORD_CHANGE
+  PASSWORD_RESET
+  EMAIL_VERIFICATION
+}
+
 model Property {
   id              String         @id @default(cuid())
   title           String

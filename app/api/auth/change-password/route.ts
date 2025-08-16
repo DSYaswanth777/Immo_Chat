@@ -1,76 +1,83 @@
-import { NextRequest, NextResponse } from "next/server"
-import bcrypt from "bcryptjs"
-import { z } from "zod"
-import { prisma } from "@/lib/prisma"
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authConfig } from '@/lib/auth-config'
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
+import bcrypt from 'bcryptjs'
 
-// Validation schema
 const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, "La password attuale è obbligatoria"),
-  newPassword: z
-    .string()
-    .min(8, "La nuova password deve contenere almeno 8 caratteri")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "La password deve contenere almeno una lettera minuscola, una maiuscola e un numero"),
-  confirmNewPassword: z.string(),
-  userEmail: z.string().email("Email non valida"),
-}).refine((data) => data.newPassword === data.confirmNewPassword, {
-  message: "Le password non corrispondono",
-  path: ["confirmNewPassword"],
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+  confirmPassword: z.string().min(1, 'Password confirmation is required'),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 })
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    
-    // Validate input
-    const validatedData = changePasswordSchema.parse(body)
-    
-    // Find user in database
-    const user = await prisma.user.findUnique({
-      where: { email: validatedData.userEmail }
-    })
-    
-    if (!user || !user.password) {
-      return NextResponse.json(
-        { error: "Utente non trovato" },
-        { status: 404 }
-      )
+    const session = await getServerSession(authConfig)
+    if (!session || !session.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check current password
+    const body = await request.json()
+    const validatedData = changePasswordSchema.parse(body)
+
+    const userEmail = (session.user as any).email
+    if (!userEmail) {
+      return NextResponse.json({ error: 'User email not found' }, { status: 400 })
+    }
+
+    // Get user from database
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+      select: { id: true, email: true, password: true }
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    if (!user.password) {
+      return NextResponse.json({ error: 'User has no password set' }, { status: 400 })
+    }
+
+    // Verify current password
     const isCurrentPasswordValid = await bcrypt.compare(validatedData.currentPassword, user.password)
     if (!isCurrentPasswordValid) {
-      return NextResponse.json(
-        { error: "Password attuale non corretta" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 })
     }
 
     // Hash new password
     const hashedNewPassword = await bcrypt.hash(validatedData.newPassword, 12)
-    
+
     // Update password in database
     await prisma.user.update({
-      where: { email: validatedData.userEmail },
-      data: { password: hashedNewPassword }
+      where: { id: user.id },
+      data: { 
+        password: hashedNewPassword,
+        updatedAt: new Date()
+      }
     })
 
-    return NextResponse.json({
-      success: true,
-      message: "Password cambiata con successo!",
+    console.log(`Password changed successfully for: ${user.email}`)
+
+    return NextResponse.json({ 
+      message: 'Password changed successfully' 
     })
-  } catch (error: any) {
-    console.error("Change password error:", error)
-    
+
+  } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ 
+        error: 'Validation error', 
+        details: error.errors 
+      }, { status: 400 })
     }
     
-    return NextResponse.json(
-      { error: error.message || "Errore durante il cambio password" },
-      { status: 500 }
-    )
+    console.error('Change password error:', error)
+    return NextResponse.json({ 
+      error: 'Internal server error' 
+    }, { status: 500 })
   }
 }

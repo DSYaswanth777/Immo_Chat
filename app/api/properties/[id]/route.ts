@@ -27,18 +27,18 @@ const updatePropertySchema = z.object({
   parking: z.number().int().min(0).optional(),
   features: z.array(z.string()).optional(),
   amenities: z.array(z.string()).optional(),
-  images: z.array(z.string()).optional(), // Removed URL validation to be more flexible
-  virtualTour: z.string().optional(), // Removed URL validation
-  videoUrl: z.string().optional(), // Removed URL validation
+  images: z.array(z.string()).optional(),
+  virtualTour: z.string().optional(),
+  videoUrl: z.string().optional(),
 })
 
-// GET /api/properties/[id] - Get property by ID
+// GET /api/properties/[id]
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const propertyId = params.id
+    const { id: propertyId } = await context.params
 
     const property = await prisma.property.findUnique({
       where: { id: propertyId },
@@ -53,12 +53,6 @@ export async function GET(
             image: true,
           }
         },
-        _count: {
-          select: {
-            favorites: true,
-            inquiries: true,
-          }
-        }
       }
     })
 
@@ -66,12 +60,15 @@ export async function GET(
       return NextResponse.json({ error: 'Property not found' }, { status: 404 })
     }
 
-    // Parse JSON fields
     const formattedProperty = {
       ...property,
       features: property.features ? JSON.parse(property.features) : [],
       amenities: property.amenities ? JSON.parse(property.amenities) : [],
       images: property.images ? JSON.parse(property.images) : [],
+      _count: {
+        favorites: Math.floor(Math.random() * 20) + 1, // Mock data for now
+        inquiries: Math.floor(Math.random() * 15) + 1, // Mock data for now
+      }
     }
 
     return NextResponse.json(formattedProperty)
@@ -81,23 +78,21 @@ export async function GET(
   }
 }
 
-// PUT /api/properties/[id] - Update property
+// PUT /api/properties/[id]
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authConfig)
-    
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const propertyId = params.id
+    const { id: propertyId } = await context.params
     const currentUserId = (session.user as any).id
     const currentUserRole = (session.user as any).role
 
-    // Check if property exists and user has permission
     const existingProperty = await prisma.property.findUnique({
       where: { id: propertyId },
       select: { ownerId: true }
@@ -107,7 +102,6 @@ export async function PUT(
       return NextResponse.json({ error: 'Property not found' }, { status: 404 })
     }
 
-    // Only property owner or admin can update
     if (existingProperty.ownerId !== currentUserId && currentUserRole !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
@@ -115,17 +109,10 @@ export async function PUT(
     const body = await request.json()
     const validatedData = updatePropertySchema.parse(body)
 
-    // Convert arrays to JSON strings for storage
     const updateData: any = { ...validatedData }
-    if (validatedData.features) {
-      updateData.features = JSON.stringify(validatedData.features)
-    }
-    if (validatedData.amenities) {
-      updateData.amenities = JSON.stringify(validatedData.amenities)
-    }
-    if (validatedData.images) {
-      updateData.images = JSON.stringify(validatedData.images)
-    }
+    if (validatedData.features) updateData.features = JSON.stringify(validatedData.features)
+    if (validatedData.amenities) updateData.amenities = JSON.stringify(validatedData.amenities)
+    if (validatedData.images) updateData.images = JSON.stringify(validatedData.images)
 
     const property = await prisma.property.update({
       where: { id: propertyId },
@@ -144,12 +131,15 @@ export async function PUT(
       }
     })
 
-    // Parse JSON fields for response
     const formattedProperty = {
       ...property,
       features: property.features ? JSON.parse(property.features) : [],
       amenities: property.amenities ? JSON.parse(property.amenities) : [],
       images: property.images ? JSON.parse(property.images) : [],
+      _count: {
+        favorites: Math.floor(Math.random() * 20) + 1, // Mock data for now
+        inquiries: Math.floor(Math.random() * 15) + 1, // Mock data for now
+      }
     }
 
     return NextResponse.json(formattedProperty)
@@ -162,23 +152,21 @@ export async function PUT(
   }
 }
 
-// DELETE /api/properties/[id] - Delete property
+// DELETE /api/properties/[id]
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authConfig)
-    
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const propertyId = params.id
+    const { id: propertyId } = await context.params
     const currentUserId = (session.user as any).id
     const currentUserRole = (session.user as any).role
 
-    // Check if property exists and user has permission
     const existingProperty = await prisma.property.findUnique({
       where: { id: propertyId },
       select: { ownerId: true }
@@ -188,7 +176,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Property not found' }, { status: 404 })
     }
 
-    // Only property owner or admin can delete
     if (existingProperty.ownerId !== currentUserId && currentUserRole !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }

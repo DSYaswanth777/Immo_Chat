@@ -18,6 +18,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
@@ -44,6 +45,9 @@ import {
   Trash2,
   Users,
   UserPlus,
+  Shield,
+  ShieldCheck,
+  Edit,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -73,6 +77,10 @@ export default function UsersManagementPage() {
   const [roleFilter, setRoleFilter] = useState('')
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [userToDelete, setUserToDelete] = useState<User | null>(null)
+  const [roleChangeDialogOpen, setRoleChangeDialogOpen] = useState(false)
+  const [userToChangeRole, setUserToChangeRole] = useState<User | null>(null)
+  const [newRole, setNewRole] = useState<'ADMIN' | 'CUSTOMER'>('CUSTOMER')
+  const [changingRole, setChangingRole] = useState(false)
 
   const userRole = (session?.user as any)?.role || 'CUSTOMER'
   const currentUserId = (session?.user as any)?.id
@@ -80,7 +88,7 @@ export default function UsersManagementPage() {
   // Redirect if not admin
   useEffect(() => {
     if (userRole !== 'ADMIN') {
-      window.location.href = '/dashboard'
+      window.location.href = '/dashboard/properties'
       return
     }
   }, [userRole])
@@ -151,6 +159,61 @@ export default function UsersManagementPage() {
       setDeleteDialogOpen(false)
       setUserToDelete(null)
     }
+  }
+
+  const handleRoleChange = async () => {
+    if (!userToChangeRole) return
+
+    try {
+      setChangingRole(true)
+      
+      const response = await fetch(`/api/users/${userToChangeRole.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          role: newRole,
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Errore durante il cambio ruolo')
+      }
+
+      const updatedUser = await response.json()
+
+      // Update users in state
+      setUsers(prev => prev.map(u => 
+        u.id === userToChangeRole.id ? { ...u, role: updatedUser.role } : u
+      ))
+      setFilteredUsers(prev => prev.map(u => 
+        u.id === userToChangeRole.id ? { ...u, role: updatedUser.role } : u
+      ))
+
+      const actionText = newRole === 'ADMIN' ? 'promosso ad amministratore' : 'retrocesso a cliente'
+      toast.success(`Utente ${actionText} con successo`)
+    } catch (error: any) {
+      console.error('Error changing user role:', error)
+      toast.error(error.message || 'Errore durante il cambio ruolo')
+    } finally {
+      setChangingRole(false)
+      setRoleChangeDialogOpen(false)
+      setUserToChangeRole(null)
+    }
+  }
+
+  const initiateRoleChange = (user: User, targetRole: 'ADMIN' | 'CUSTOMER') => {
+    // Prevent admin from demoting themselves
+    if (user.id === currentUserId && targetRole === 'CUSTOMER') {
+      toast.error('Non puoi retrocedere il tuo stesso account')
+      return
+    }
+
+    setUserToChangeRole(user)
+    setNewRole(targetRole)
+    setRoleChangeDialogOpen(true)
   }
 
   if (userRole !== 'ADMIN') {
@@ -279,11 +342,42 @@ export default function UsersManagementPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
+                          onClick={() => window.open(`/dashboard/admin/users/${user.id}/edit`, '_blank')}
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          Modifica
+                        </DropdownMenuItem>
+                        
+                        <DropdownMenuSeparator />
+                        
+                        {user.role === 'CUSTOMER' ? (
+                          <DropdownMenuItem
+                            onClick={() => initiateRoleChange(user, 'ADMIN')}
+                            className="text-green-600"
+                          >
+                            <ShieldCheck className="h-4 w-4 mr-2" />
+                            Promuovi ad Admin
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => initiateRoleChange(user, 'CUSTOMER')}
+                            className="text-orange-600"
+                            disabled={user.id === currentUserId}
+                          >
+                            <Shield className="h-4 w-4 mr-2" />
+                            Retrocedi a Cliente
+                          </DropdownMenuItem>
+                        )}
+                        
+                        <DropdownMenuSeparator />
+                        
+                        <DropdownMenuItem
                           onClick={() => {
                             setUserToDelete(user)
                             setDeleteDialogOpen(true)
                           }}
                           className="text-red-600"
+                          disabled={user.id === currentUserId}
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Elimina
@@ -315,6 +409,46 @@ export default function UsersManagementPage() {
               className="bg-red-600 hover:bg-red-700"
             >
               Elimina
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Role Change Confirmation Dialog */}
+      <AlertDialog open={roleChangeDialogOpen} onOpenChange={setRoleChangeDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Conferma Cambio Ruolo</AlertDialogTitle>
+            <AlertDialogDescription>
+              {newRole === 'ADMIN' ? (
+                <>
+                  Sei sicuro di voler <strong>promuovere</strong> l'utente "{userToChangeRole?.name}" ad <strong>Amministratore</strong>?
+                  <br /><br />
+                  L'utente avrà accesso completo al pannello di amministrazione e potrà gestire tutti gli utenti e le proprietà.
+                </>
+              ) : (
+                <>
+                  Sei sicuro di voler <strong>retrocedere</strong> l'utente "{userToChangeRole?.name}" a <strong>Cliente</strong>?
+                  <br /><br />
+                  L'utente perderà l'accesso al pannello di amministrazione e potrà gestire solo le proprie proprietà.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={changingRole}>
+              Annulla
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleRoleChange}
+              disabled={changingRole}
+              className={newRole === 'ADMIN' ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-600 hover:bg-orange-700'}
+            >
+              {changingRole ? (
+                'Cambiando...'
+              ) : (
+                newRole === 'ADMIN' ? 'Promuovi ad Admin' : 'Retrocedi a Cliente'
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

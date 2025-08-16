@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
+import bcrypt from "bcryptjs"
 
 export const authConfig: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -10,6 +11,13 @@ export const authConfig: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     }),
     CredentialsProvider({
       name: "credentials",
@@ -19,11 +27,12 @@ export const authConfig: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log("Missing credentials")
           return null
         }
 
         try {
-          // For demo purposes, create test admin user
+          // First, check for demo users (for backward compatibility)
           if (credentials.email === "admin@immochat.com" && credentials.password === "admin123") {
             const adminUser = await prisma.user.upsert({
               where: { email: "admin@immochat.com" },
@@ -43,7 +52,6 @@ export const authConfig: NextAuthOptions = {
             }
           }
 
-          // For demo purposes, create test customer user
           if (credentials.email === "customer@immochat.com" && credentials.password === "customer123") {
             const customerUser = await prisma.user.upsert({
               where: { email: "customer@immochat.com" },
@@ -63,7 +71,33 @@ export const authConfig: NextAuthOptions = {
             }
           }
 
-          return null
+          // Check for real users in database
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email }
+          })
+
+          if (!user || !user.password) {
+            console.log("User not found or no password set")
+            return null
+          }
+
+          // Verify password using bcrypt
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
+          
+          if (!isPasswordValid) {
+            console.log("Invalid password")
+            return null
+          }
+
+          console.log("Authentication successful for user:", user.email)
+          
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          }
+
         } catch (error) {
           console.error("Auth error:", error)
           return null
@@ -76,7 +110,9 @@ export const authConfig: NextAuthOptions = {
   },
   pages: {
     signIn: "/auth/login",
+    error: "/auth/error", // Error code passed in query string as ?error=
   },
+  debug: process.env.NODE_ENV === "development" && process.env.NEXTAUTH_DEBUG === "true",
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
@@ -104,27 +140,12 @@ export const authConfig: NextAuthOptions = {
       return session
     },
     async signIn({ user, account, profile }) {
-      // If signing in with Google, ensure user has default role
-      if (account?.provider === "google" && user?.email) {
-        try {
-          await prisma.user.upsert({
-            where: { email: user.email },
-            update: {
-              name: user.name,
-              image: user.image,
-            },
-            create: {
-              email: user.email,
-              name: user.name,
-              image: user.image,
-              role: "CUSTOMER", // Default role for new Google users
-            }
-          })
-        } catch (error) {
-          console.error("Error creating/updating user:", error)
-          return false
-        }
-      }
+      console.log("SignIn callback triggered:", { 
+        provider: account?.provider, 
+        email: user?.email,
+        userId: user?.id 
+      })
+      
       return true
     },
   },

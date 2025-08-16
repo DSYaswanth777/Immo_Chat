@@ -69,7 +69,7 @@ export function HomepageHeader() {
           ) : session ? (
             // Authenticated state - show profile and dashboard
             <>
-              <Link href="/dashboard">
+              <Link href="/dashboard/properties">
                 <Button
                   variant="outline"
                   className="border-[#10c03e] text-[#10c03e] hover:bg-[#10c03e] hover:text-white"
@@ -109,7 +109,10 @@ export function HomepageHeader() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="cursor-pointer">
+                    <Link
+                      href="/dashboard/properties"
+                      className="cursor-pointer"
+                    >
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       <span>Dashboard</span>
                     </Link>

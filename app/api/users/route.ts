@@ -66,7 +66,6 @@ export async function GET(request: NextRequest) {
           _count: {
             select: {
               properties: true,
-              favorites: true,
             }
           }
         }

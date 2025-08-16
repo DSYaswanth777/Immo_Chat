@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Phone, Building, Save, Loader2, Lock } from "lucide-react";
+import { User, Mail, Phone, Building, Save, Loader2, Lock, Shield, Plus } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -55,6 +55,9 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [hasPassword, setHasPassword] = useState(false);
+  const [checkingPassword, setCheckingPassword] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -73,28 +76,44 @@ export default function ProfilePage() {
       if (!userId) return;
 
       try {
+        setLoading(true);
         const response = await fetch(`/api/users/${userId}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch profile");
+
+        if (response.ok) {
+          const userData = await response.json();
+          setProfile(userData);
+          // Set form values
+          setValue("name", userData.name || "");
+          setValue("phone", userData.phone || "");
+          setValue("company", userData.company || "");
+          setValue("bio", userData.bio || "");
+        } else {
+          setError("Errore nel caricamento del profilo");
         }
-
-        const userData = await response.json();
-        setProfile(userData);
-
-        // Populate form with current data
-        setValue("name", userData.name || "");
-        setValue("phone", userData.phone || "");
-        setValue("company", userData.company || "");
-        setValue("bio", userData.bio || "");
       } catch (error) {
-        console.error("Error fetching profile:", error);
-        toast.error("Errore nel caricamento del profilo");
+        setError("Errore nel caricamento del profilo");
       } finally {
         setLoading(false);
       }
     };
 
+    const checkPasswordStatus = async () => {
+      try {
+        setCheckingPassword(true);
+        const response = await fetch('/api/auth/set-password');
+        if (response.ok) {
+          const result = await response.json();
+          setHasPassword(result.hasPassword);
+        }
+      } catch (error) {
+        console.error("Error checking password status:", error);
+      } finally {
+        setCheckingPassword(false);
+      }
+    };
+
     fetchProfile();
+    checkPasswordStatus();
   }, [userId, setValue]);
 
   const onSubmit = async (data: ProfileFormData) => {
@@ -219,12 +238,39 @@ export default function ProfilePage() {
 
             <Separator />
 
-            <Link href="/auth/change-password" className="w-full">
-              <Button variant="outline" className="w-full">
-                <Lock className="h-4 w-4 mr-2" />
-                Cambia Password
-              </Button>
-            </Link>
+            <div className="space-y-2">
+              {hasPassword ? (
+                <Link href="/auth/change-password" className="w-full">
+                  <Button variant="outline" className="w-full">
+                    <Lock className="h-4 w-4 mr-2" />
+                    Cambia Password
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/auth/set-password" className="w-full">
+                  <Button className="w-full bg-[#10c03e] hover:bg-[#0ea835]">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Imposta Password
+                  </Button>
+                </Link>
+              )}
+              
+              {!hasPassword && !checkingPassword && (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-md">
+                  <div className="flex items-start">
+                    <Shield className="h-4 w-4 text-amber-600 mt-0.5 mr-2 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs font-medium text-amber-800">
+                        Account Google
+                      </p>
+                      <p className="text-xs text-amber-700 mt-1">
+                        Imposta una password per accedere anche con email e password
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -247,7 +293,9 @@ export default function ProfilePage() {
                     className={errors.name ? "border-red-500" : ""}
                   />
                   {errors.name && (
-                    <p className="text-sm text-red-600">{errors.name.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.name.message}
+                    </p>
                   )}
                 </div>
 

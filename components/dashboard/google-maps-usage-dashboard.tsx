@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -51,36 +51,120 @@ export function GoogleMapsUsageDashboard() {
   const [weeklyUsage, setWeeklyUsage] = useState<WeeklyUsage[]>([]);
   const [monthlyEstimate, setMonthlyEstimate] = useState<MonthlyEstimate | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Use refs to prevent memory leaks and race conditions
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const mountedRef = useRef(true);
 
-  const refreshData = () => {
-    setIsRefreshing(true);
-    setStats(getStats());
-    setTodayUsage(getTodayUsage());
-    setWeeklyUsage(getWeeklyUsage());
-    setMonthlyEstimate(getMonthlyEstimate());
-    setTimeout(() => setIsRefreshing(false), 500);
-  };
+  // Memoized refresh function to prevent unnecessary re-renders
+  const refreshData = useCallback(() => {
+    if (!mountedRef.current) return;
+    
+    try {
+      setIsRefreshing(true);
+      setError(null);
+      
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        if (!mountedRef.current) return;
+        
+        setStats(getStats());
+        setTodayUsage(getTodayUsage());
+        setWeeklyUsage(getWeeklyUsage());
+        setMonthlyEstimate(getMonthlyEstimate());
+        
+        // Clear any existing timeout before setting new one
+        if (refreshTimeoutRef.current) {
+          clearTimeout(refreshTimeoutRef.current);
+        }
+        
+        refreshTimeoutRef.current = setTimeout(() => {
+          if (mountedRef.current) {
+            setIsRefreshing(false);
+          }
+        }, 300); // Reduced timeout for better UX
+      });
+    } catch (err) {
+      console.error('Error refreshing dashboard data:', err);
+      setError('Failed to refresh data');
+      setIsRefreshing(false);
+    }
+  }, [getStats, getTodayUsage, getWeeklyUsage, getMonthlyEstimate]);
 
+  // Optimized export function with proper DOM cleanup
+  const handleExportData = useCallback(() => {
+    try {
+      const data = exportData();
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create download link with proper cleanup
+      const downloadLink = document.createElement('a');
+      downloadLink.href = url;
+      downloadLink.download = `google-maps-usage-${new Date().toISOString().split('T')[0]}.json`;
+      downloadLink.style.display = 'none'; // Hide the element
+      
+      // Use try-catch for DOM manipulation
+      try {
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+      } catch (domError) {
+        console.error('DOM manipulation error during export:', domError);
+        // Fallback: try to trigger download without DOM manipulation
+        window.open(url, '_blank');
+      } finally {
+        // Ensure cleanup happens even if there's an error
+        try {
+          if (downloadLink.parentNode) {
+            document.body.removeChild(downloadLink);
+          }
+        } catch (cleanupError) {
+          console.warn('Cleanup error:', cleanupError);
+        }
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      setError('Failed to export data');
+    }
+  }, [exportData]);
+
+  // Initial data load and interval setup
   useEffect(() => {
+    mountedRef.current = true;
+    
+    // Initial load
     refreshData();
     
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(refreshData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+    // Set up auto-refresh with longer interval to reduce load
+    intervalRef.current = setInterval(() => {
+      if (mountedRef.current) {
+        refreshData();
+      }
+    }, 60000); // Increased to 60 seconds to reduce performance impact
+    
+    // Cleanup function
+    return () => {
+      mountedRef.current = false;
+      
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, [refreshData]);
 
-  const handleExportData = () => {
-    const data = exportData();
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `google-maps-usage-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const getUsageLevel = (usage: number): { color: string; label: string } => {
     if (usage < 100) return { color: "bg-green-500", label: "Low" };
@@ -89,6 +173,37 @@ export function GoogleMapsUsageDashboard() {
     return { color: "bg-red-500", label: "Very High" };
   };
 
+  // Error boundary
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Google Maps API Usage</h3>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refreshData}
+            disabled={isRefreshing}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            Retry
+          </Button>
+        </div>
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <p className="text-red-600 mb-2">⚠️ {error}</p>
+              <Button onClick={refreshData} variant="outline" size="sm">
+                Try Again
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Loading state
   if (!stats || !monthlyEstimate) {
     return (
       <div className="space-y-4">
@@ -129,6 +244,7 @@ export function GoogleMapsUsageDashboard() {
             variant="outline"
             size="sm"
             onClick={handleExportData}
+            disabled={isRefreshing}
           >
             <Download className="h-4 w-4 mr-2" />
             Export

@@ -62,10 +62,10 @@ export default function ForgotPasswordPage() {
 
       setSuccessMessage(result.message);
 
-      // Redirect to login after 3 seconds
+      // Redirect to password reset page with OTP verification after 2 seconds
       setTimeout(() => {
-        router.push("/auth/login");
-      }, 3000);
+        router.push(`/auth/reset-password?email=${encodeURIComponent(data.email)}`);
+      }, 2000);
     } catch (error: any) {
       setError("root", {
         message:
@@ -96,7 +96,7 @@ export default function ForgotPasswordPage() {
               Password Dimenticata
             </CardTitle>
             <CardDescription className="text-center">
-              Inserisci la tua email per ricevere un link di reset
+              Inserisci la tua email per ricevere un codice OTP
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -136,7 +136,7 @@ export default function ForgotPasswordPage() {
                 disabled={isLoading}
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isLoading ? "Invio in corso..." : "Invia Link di Reset"}
+                {isLoading ? "Invio in corso..." : "Invia Codice OTP"}
               </Button>
             </form>
 
@@ -158,7 +158,7 @@ export default function ForgotPasswordPage() {
               </h4>
               <ul className="text-xs text-blue-700 space-y-1">
                 <li>• Controlla la tua casella email</li>
-                <li>• Clicca sul link ricevuto</li>
+                <li>• Inserisci il codice OTP ricevuto</li>
                 <li>• Imposta una nuova password sicura</li>
                 <li>• Accedi con le nuove credenziali</li>
               </ul>

@@ -5,8 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowLeft, Shield } from "lucide-react";
 import Link from "next/link";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,11 +19,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  changePasswordSchema,
-  type ChangePasswordFormData,
-  changeUserPassword,
-} from "@/lib/auth";
+
+const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Password attuale richiesta"),
+    newPassword: z
+      .string()
+      .min(8, "La nuova password deve contenere almeno 8 caratteri")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "La password deve contenere almeno una lettera minuscola, una maiuscola e un numero"
+      ),
+    confirmPassword: z.string().min(1, "Conferma password richiesta"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Le password non corrispondono",
+    path: ["confirmPassword"],
+  });
+
+type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
 export default function ChangePasswordPage() {
   const { data: session } = useSession();
@@ -48,30 +63,34 @@ export default function ChangePasswordPage() {
       setIsLoading(true);
       setSuccessMessage("");
 
-      // Get user email from session
-      const userEmail = (session?.user as any)?.email;
+      const response = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentPassword: data.currentPassword,
+          newPassword: data.newPassword,
+          confirmPassword: data.confirmPassword,
+        }),
+      });
 
-      if (!userEmail) {
-        setError("root", {
-          message: "Sessione non valida. Effettua nuovamente l'accesso.",
-        });
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (result.error === "Current password is incorrect") {
+          setError("currentPassword", {
+            message: "Password attuale non corretta",
+          });
+        } else {
+          throw new Error(result.error || "Errore durante il cambio password");
+        }
         return;
       }
 
-      console.log("Attempting to change password for:", userEmail);
-      console.log("Form data:", data);
-
-      const result = await changeUserPassword(data, userEmail);
-
-      console.log("Change password result:", result);
-
-      if (result.success) {
-        setSuccessMessage(result.message);
-        reset(); // Clear the form
-        // Don't redirect automatically - let user choose when to go back
-      }
+      setSuccessMessage("Password cambiata con successo!");
+      reset();
     } catch (error: any) {
-      console.error("Change password error:", error);
       setError("root", {
         message:
           error.message ||
@@ -86,7 +105,7 @@ export default function ChangePasswordPage() {
     <div className="sm:mx-auto sm:w-full sm:max-w-md">
       <div className="flex items-center justify-center mb-6">
         <Link
-          href="/dashboard"
+          href="/dashboard/properties"
           className="flex items-center text-[#10c03e] hover:text-[#0ea835] transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -97,18 +116,20 @@ export default function ChangePasswordPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Card>
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center text-[#203129]">
+            <CardTitle className="text-2xl font-bold text-center text-[#203129] flex items-center justify-center">
+              <Shield className="w-6 h-6 mr-2" />
               Cambia Password
             </CardTitle>
             <CardDescription className="text-center">
-              Aggiorna la tua password per mantenere il tuo account sicuro
+              Inserisci la password attuale e la nuova password per aggiornare
+              le tue credenziali
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {successMessage && (
               <div className="p-4 bg-green-50 border border-green-200 rounded-md">
                 <p className="text-sm text-green-800 mb-3">{successMessage}</p>
-                <Link href="/dashboard">
+                <Link href="/dashboard/properties">
                   <Button size="sm" className="bg-[#10c03e] hover:bg-[#0ea835]">
                     Torna alla Dashboard
                   </Button>
@@ -124,7 +145,7 @@ export default function ChangePasswordPage() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="currentPassword">Password attuale</Label>
+                <Label htmlFor="currentPassword">Password Attuale</Label>
                 <div className="relative">
                   <Input
                     id="currentPassword"
@@ -159,7 +180,7 @@ export default function ChangePasswordPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="newPassword">Nuova password</Label>
+                <Label htmlFor="newPassword">Nuova Password</Label>
                 <div className="relative">
                   <Input
                     id="newPassword"
@@ -191,26 +212,18 @@ export default function ChangePasswordPage() {
                     {errors.newPassword.message}
                   </p>
                 )}
-                <p className="text-xs text-gray-500">
-                  La password deve contenere almeno 8 caratteri, una lettera
-                  minuscola, una maiuscola e un numero.
-                </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmNewPassword">
-                  Conferma nuova password
-                </Label>
+                <Label htmlFor="confirmPassword">Conferma Nuova Password</Label>
                 <div className="relative">
                   <Input
-                    id="confirmNewPassword"
+                    id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Conferma la nuova password"
-                    {...register("confirmNewPassword")}
+                    {...register("confirmPassword")}
                     className={
-                      errors.confirmNewPassword
-                        ? "border-red-500 pr-10"
-                        : "pr-10"
+                      errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"
                     }
                   />
                   <button
@@ -229,9 +242,9 @@ export default function ChangePasswordPage() {
                     )}
                   </button>
                 </div>
-                {errors.confirmNewPassword && (
+                {errors.confirmPassword && (
                   <p className="text-sm text-red-600">
-                    {errors.confirmNewPassword.message}
+                    {errors.confirmPassword.message}
                   </p>
                 )}
               </div>

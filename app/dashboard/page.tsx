@@ -32,62 +32,97 @@ interface DashboardStats {
 }
 
 export default function DashboardPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [redirecting, setRedirecting] = useState(false);
   const router = useRouter();
 
   const userRole = (session?.user as any)?.role || "CUSTOMER";
   const isAdmin = userRole === "ADMIN";
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        // Mock data based on user role
-        const mockStats: DashboardStats = {
-          totalProperties: isAdmin ? 156 : 8,
-          totalUsers: isAdmin ? 1247 : 0,
-          totalInquiries: isAdmin ? 89 : 12,
-          recentProperties: [
-            {
-              id: "1",
-              title: "Appartamento Moderno Milano",
-              city: "Milano",
-              price: 450000,
-              type: "APARTMENT",
-              status: "FOR_SALE",
-            },
-            {
-              id: "2",
-              title: "Villa con Giardino Roma",
-              city: "Roma",
-              price: 750000,
-              type: "VILLA",
-              status: "FOR_SALE",
-            },
-          ],
-          recentInquiries: [
-            {
-              id: "1",
-              name: "Marco Rossi",
-              email: "marco@example.com",
-              message: "Interessato a visitare l'appartamento",
-              property: { title: "Appartamento Centro Storico" },
-              createdAt: new Date().toISOString(),
-            },
-          ],
-        };
-        setStats(mockStats);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    // Handle redirects after session is loaded
+    if (status === "loading") return;
 
-    fetchDashboardData();
-  }, [isAdmin]);
+    if (!session) {
+      router.push("/");
+      return;
+    }
 
+    if (!isAdmin && userRole === "CUSTOMER") {
+      setRedirecting(true);
+      router.push("/dashboard/properties");
+      return;
+    }
+
+    // Only fetch data if we're not redirecting
+    if (!redirecting) {
+      fetchDashboardData();
+    }
+  }, [session, status, isAdmin, userRole, redirecting, router]);
+
+  const fetchDashboardData = async () => {
+    try {
+      // Mock data based on user role
+      const mockStats: DashboardStats = {
+        totalProperties: isAdmin ? 156 : 8,
+        totalUsers: isAdmin ? 1247 : 0,
+        totalInquiries: isAdmin ? 89 : 12,
+        recentProperties: [
+          {
+            id: "1",
+            title: "Appartamento Moderno Milano",
+            city: "Milano",
+            price: 450000,
+            type: "APARTMENT",
+            status: "FOR_SALE",
+          },
+          {
+            id: "2",
+            title: "Villa con Giardino Roma",
+            city: "Roma",
+            price: 750000,
+            type: "VILLA",
+            status: "FOR_SALE",
+          },
+        ],
+        recentInquiries: [
+          {
+            id: "1",
+            name: "Marco Rossi",
+            email: "marco@example.com",
+            message: "Interessato a visitare l'appartamento",
+            property: { title: "Appartamento Centro Storico" },
+            createdAt: new Date().toISOString(),
+          },
+        ],
+      };
+      setStats(mockStats);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Show loading while session is loading or redirecting
+  if (status === "loading" || redirecting) {
+    return (
+      <div className="p-6">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading while fetching data
   if (loading) {
     return (
       <div className="p-6">
@@ -103,13 +138,8 @@ export default function DashboardPage() {
     );
   }
 
-  if (!session) {
-    router.push("/");
-    return null;
-  }
-
-  if (!isAdmin && userRole === "CUSTOMER") {
-    router.push("/dashboard/properties");
+  // Don't render anything if no session or redirecting
+  if (!session || redirecting) {
     return null;
   }
 
@@ -122,10 +152,9 @@ export default function DashboardPage() {
             Benvenuto, {session?.user?.name}!
           </h1>
           <p className="text-gray-600 mt-1">
-            {isAdmin 
-              ? "Gestisci la piattaforma immobiliare" 
-              : "Visualizza le proprietà disponibili"
-            }
+            {isAdmin
+              ? "Gestisci la piattaforma immobiliare"
+              : "Visualizza le proprietà disponibili"}
           </p>
         </div>
         <div className="flex space-x-3">
@@ -235,7 +264,9 @@ export default function DashboardPage() {
                       <Badge variant="outline">{property.type}</Badge>
                       <Badge
                         variant={
-                          property.status === "FOR_SALE" ? "default" : "secondary"
+                          property.status === "FOR_SALE"
+                            ? "default"
+                            : "secondary"
                         }
                       >
                         {property.status === "FOR_SALE"

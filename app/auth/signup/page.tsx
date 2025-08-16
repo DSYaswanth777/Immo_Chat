@@ -54,6 +54,8 @@ export default function SignupPage() {
   }
 
   return (
+
+    <div className="sm:mx-auto sm:w-full sm:max-w-md">
     <Card>
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center text-[#203129]">
@@ -210,5 +212,7 @@ export default function SignupPage() {
         </div>
       </CardContent>
     </Card>
+    </div>
+
   )
 }

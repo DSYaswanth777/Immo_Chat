@@ -84,17 +84,12 @@ export async function GET(request: NextRequest) {
               company: true,
               image: true,
             }
-          },
-          _count: {
-            select: {
-              favorites: true,
-              inquiries: true,
-            }
           }
         }
       }),
       prisma.property.count({ where })
     ])
+    
 
     // Parse JSON fields
     const formattedProperties = properties.map((property: any) => ({
