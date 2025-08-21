@@ -5,7 +5,7 @@ export default function ComingSoon() {
         IMMO<span className="text-[#10c03e]">CHAT</span>
       </h1>
       <p className="text-2xl mb-8 text-center">
-        Il nostro nuovo sito è in arrivo!
+        Il nostro nuovo sito è in arrivo
       </p>
       <div className="max-w-md text-center mb-8">
         <p className="text-lg">
