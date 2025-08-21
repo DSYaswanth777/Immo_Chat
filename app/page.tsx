@@ -1,6 +1,3 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-
 export default function ComingSoon() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#203129] to-[#2a4233] flex flex-col items-center justify-center text-white p-4">
