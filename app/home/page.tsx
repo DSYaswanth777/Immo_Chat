@@ -89,7 +89,7 @@ export default function ImmochatLanding() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-4xl font-bold text-[#203129] mb-2">50K+</div>
+              <div className="text-4xl font-bold text-[#203129] mb-2">60K+</div>
               <div className="text-gray-600">Agenti Attivi</div>
             </div>
             <div className="text-center">
