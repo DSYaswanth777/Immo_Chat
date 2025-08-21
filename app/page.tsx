@@ -17,16 +17,6 @@ export default function ComingSoon() {
           rivoluzionerà il settore immobiliare.
         </p>
       </div>
-      {/* <div className="flex gap-4">
-        <Link href="/home">
-            <Button
-            size="lg"
-            className="bg-[#10c03e] hover:bg-[#0ea835] text-white"
-            >
-            Vai alla home page attuale
-            </Button>
-        </Link>
-      </div> */}
     </div>
   );
 }
