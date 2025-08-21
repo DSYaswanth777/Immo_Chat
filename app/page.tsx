@@ -17,7 +17,7 @@ export default function ComingSoon() {
           rivoluzionerà il settore immobiliare.
         </p>
       </div>
-      <div className="flex gap-4">
+      {/* <div className="flex gap-4">
         <Link href="/home">
             <Button
             size="lg"
@@ -26,7 +26,7 @@ export default function ComingSoon() {
             Vai alla home page attuale
             </Button>
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 }
