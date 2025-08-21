@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "Stopping existing PM2 process..."
+pm2 delete immochat || true
+
 echo "Pulling latest code..."
 git reset --hard origin/main
 git clean -fd
@@ -11,8 +14,8 @@ npm install
 echo "Building Next.js app..."
 npm run build
 
-echo "Restarting PM2 process..."
-pm2 restart immochat || pm2 start node --name immochat -- .next/standalone/server.js
+echo "Starting PM2 process..."
+pm2 start node --name immochat -- .next/standalone/server.js
 
 echo "Deployment complete!"
 pm2 logs immochat --lines 20
