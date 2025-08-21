@@ -1,9 +1,15 @@
+import Image from "next/image";
+
 export default function ComingSoon() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#203129] to-[#2a4233] flex flex-col items-center justify-center text-white p-4">
-      <h1 className="text-5xl font-bold mb-4 text-center">
-        IMMO<span className="text-[#10c03e]">CHAT</span>
-      </h1>
+      <Image
+        src="/images/logo.png"
+        alt="Professionista Immobiliare"
+        width={200}
+        height={20}
+        className="rounded-lg bg-white p-4 mb-3"
+      />
       <p className="text-2xl mb-8 text-center">
         Il nostro nuovo sito è in arrivo!
       </p>
