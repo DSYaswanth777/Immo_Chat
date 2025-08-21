@@ -15,7 +15,7 @@ echo "Building Next.js app..."
 npm run build
 
 echo "Starting PM2 process..."
-pm2 start node --name immochat -- .next/standalone/server.js
+pm2 start npm --name immochat -- run start
 
 echo "Deployment complete!"
 pm2 logs immochat --lines 20
