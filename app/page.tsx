@@ -14,7 +14,7 @@ export default function ComingSoon() {
         <p className="text-lg">
           Stiamo lavorando duramente per offrirti un'esperienza straordinaria.
           Resta sintonizzato per il lancio della nostra piattaforma che
-          rivoluzionerà il settore immobiliare.
+          rivoluzionerà il settore immobiliare
         </p>
       </div>
     </div>
