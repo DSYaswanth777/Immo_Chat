@@ -26,78 +26,16 @@ export const authConfig: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          console.log("Missing credentials")
-          return null
-        }
+        if (!credentials?.email || !credentials?.password) return null
 
         try {
-          // First, check for demo users (for backward compatibility)
-          if (credentials.email === "admin@immochat.com" && credentials.password === "admin123") {
-            const adminUser = await prisma.user.upsert({
-              where: { email: "admin@immochat.com" },
-              update: {},
-              create: {
-                email: "admin@immochat.com",
-                name: "Admin User",
-                role: "ADMIN"
-              }
-            })
+          const user = await prisma.user.findUnique({ where: { email: credentials.email } })
+          if (!user || !user.password) return null
 
-            return {
-              id: adminUser.id,
-              email: adminUser.email,
-              name: adminUser.name,
-              role: adminUser.role,
-            }
-          }
-
-          if (credentials.email === "customer@immochat.com" && credentials.password === "customer123") {
-            const customerUser = await prisma.user.upsert({
-              where: { email: "customer@immochat.com" },
-              update: {},
-              create: {
-                email: "customer@immochat.com",
-                name: "Customer User",
-                role: "CUSTOMER"
-              }
-            })
-
-            return {
-              id: customerUser.id,
-              email: customerUser.email,
-              name: customerUser.name,
-              role: customerUser.role,
-            }
-          }
-
-          // Check for real users in database
-          const user = await prisma.user.findUnique({
-            where: { email: credentials.email }
-          })
-
-          if (!user || !user.password) {
-            console.log("User not found or no password set")
-            return null
-          }
-
-          // Verify password using bcrypt
           const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
-          
-          if (!isPasswordValid) {
-            console.log("Invalid password")
-            return null
-          }
+          if (!isPasswordValid) return null
 
-          console.log("Authentication successful for user:", user.email)
-          
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-          }
-
+          return { id: user.id, email: user.email, name: user.name, role: user.role }
         } catch (error) {
           console.error("Auth error:", error)
           return null
@@ -105,31 +43,35 @@ export const authConfig: NextAuthOptions = {
       }
     })
   ],
-  session: {
-    strategy: "jwt",
-  },
-  pages: {
-    signIn: "/auth/login",
-    error: "/auth/error", // Error code passed in query string as ?error=
-  },
+  session: { strategy: "jwt" },
+  pages: { signIn: "/auth/login", error: "/auth/error" },
   debug: process.env.NODE_ENV === "development" && process.env.NEXTAUTH_DEBUG === "true",
+
+  // --- Secure cookies & proxy fix ---
+  useSecureCookies: true,
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: true,
+      },
+    },
+  },
+
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
         token.role = (user as any).role
       }
-      
-      // If signing in with Google, ensure user has a role
+
       if (account?.provider === "google" && user?.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: user.email }
-        })
-        if (dbUser) {
-          token.role = dbUser.role
-        }
+        const dbUser = await prisma.user.findUnique({ where: { email: user.email } })
+        if (dbUser) token.role = dbUser.role
       }
-      
       return token
     },
     async session({ session, token }) {
@@ -139,13 +81,8 @@ export const authConfig: NextAuthOptions = {
       }
       return session
     },
-    async signIn({ user, account, profile }) {
-      console.log("SignIn callback triggered:", { 
-        provider: account?.provider, 
-        email: user?.email,
-        userId: user?.id 
-      })
-      
+    async signIn({ user, account }) {
+      console.log("SignIn callback triggered:", { provider: account?.provider, email: user?.email, userId: user?.id })
       return true
     },
   },
