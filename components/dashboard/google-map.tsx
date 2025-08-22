@@ -64,7 +64,7 @@ export default function GoogleMap({
   selectedProperty,
   onMarkerClick,
 }: GoogleMapProps) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
   const [infoWindow, setInfoWindow] = useState<any>(null);
@@ -79,8 +79,33 @@ export default function GoogleMap({
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const mapInitializedRef = useRef(false);
 
-  const userRole = (session?.user as any)?.role || "CUSTOMER";
+  // Only access user role when session is loaded
+  const userRole =
+    status === "loading"
+      ? "CUSTOMER"
+      : (session?.user as any)?.role || "CUSTOMER";
   const isAdmin = userRole === "ADMIN";
+
+  // Show loading while session is being fetched
+  if (status === "loading") {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#10c03e]"></div>
+      </div>
+    );
+  }
+
+  // Show error if there's a session error
+  if (status === "unauthenticated") {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-red-600 mb-2">Authentication Required</h3>
+          <p className="text-sm text-gray-600">Please log in to view the map.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Optimized marker cleanup function
   const clearMarkers = useCallback(() => {
@@ -93,85 +118,86 @@ export default function GoogleMap({
       markersRef.current = [];
       setMarkers([]);
     } catch (error) {
-      console.warn('Error clearing markers:', error);
+      console.warn("Error clearing markers:", error);
     }
   }, []);
 
   // Improved marker update function with better error handling
-  const updateMarkers = useCallback((newProperties: Property[]) => {
-    if (!map || !google?.maps || !mountedRef.current) return;
+  const updateMarkers = useCallback(
+    (newProperties: Property[]) => {
+      if (!map || !google?.maps || !mountedRef.current) return;
 
-    try {
-      // Clear existing markers safely
-      clearMarkers();
+      try {
+        // Clear existing markers safely
+        clearMarkers();
 
-      const newMarkers: google.maps.Marker[] = [];
+        const newMarkers: google.maps.Marker[] = [];
 
-      newProperties.forEach((property) => {
-        if (property.latitude && property.longitude) {
-          try {
-            const marker = new google.maps.Marker({
-              position: { lat: property.latitude, lng: property.longitude },
-              map: map,
-              title: property.title,
-              icon: {
-                url:
-                  selectedProperty?.id === property.id
-                    ? "data:image/svg+xml;charset=UTF-8," +
-                      encodeURIComponent(`
+        newProperties.forEach((property) => {
+          if (property.latitude && property.longitude) {
+            try {
+              const marker = new google.maps.Marker({
+                position: { lat: property.latitude, lng: property.longitude },
+                map: map,
+                title: property.title,
+                icon: {
+                  url:
+                    selectedProperty?.id === property.id
+                      ? "data:image/svg+xml;charset=UTF-8," +
+                        encodeURIComponent(`
                     <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="20" cy="20" r="18" fill="#10c03e" stroke="white" stroke-width="4"/>
                       <text x="20" y="26" text-anchor="middle" fill="white" font-size="12" font-weight="bold">€</text>
                     </svg>
                   `)
-                    : "data:image/svg+xml;charset=UTF-8," +
-                      encodeURIComponent(`
+                      : "data:image/svg+xml;charset=UTF-8," +
+                        encodeURIComponent(`
                     <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="16" cy="16" r="14" fill="#203129" stroke="white" stroke-width="3"/>
                       <text x="16" y="21" text-anchor="middle" fill="white" font-size="10" font-weight="bold">€</text>
                     </svg>
                   `),
-                scaledSize:
-                  selectedProperty?.id === property.id
-                    ? new google.maps.Size(40, 40)
-                    : new google.maps.Size(32, 32),
-                anchor:
-                  selectedProperty?.id === property.id
-                    ? new google.maps.Point(20, 20)
-                    : new google.maps.Point(16, 16),
-              },
-            });
+                  scaledSize:
+                    selectedProperty?.id === property.id
+                      ? new google.maps.Size(40, 40)
+                      : new google.maps.Size(32, 32),
+                  anchor:
+                    selectedProperty?.id === property.id
+                      ? new google.maps.Point(20, 20)
+                      : new google.maps.Point(16, 16),
+                },
+              });
 
-            // Add click listener with error handling
-            marker.addListener("click", () => {
-              try {
-                onMarkerClick(property);
-                googleMapsUsageTracker.trackMarkerClick();
+              // Add click listener with error handling
+              marker.addListener("click", () => {
+                try {
+                  onMarkerClick(property);
+                  googleMapsUsageTracker.trackMarkerClick();
 
-                if (infoWindow) {
-                  googleMapsUsageTracker.trackInfoWindowOpen();
-                  
-                  const getStatusLabel = (status: string) => {
-                    const statuses: { [key: string]: string } = {
-                      FOR_SALE: "In Vendita",
-                      FOR_RENT: "In Affitto",
-                      SOLD: "Venduto",
-                      RENTED: "Affittato",
+                  if (infoWindow) {
+                    googleMapsUsageTracker.trackInfoWindowOpen();
+
+                    const getStatusLabel = (status: string) => {
+                      const statuses: { [key: string]: string } = {
+                        FOR_SALE: "In Vendita",
+                        FOR_RENT: "In Affitto",
+                        SOLD: "Venduto",
+                        RENTED: "Affittato",
+                      };
+                      return statuses[status] || status;
                     };
-                    return statuses[status] || status;
-                  };
 
-                  const getTypeLabel = (type: string) => {
-                    const types: { [key: string]: string } = {
-                      APARTMENT: "Appartamento",
-                      HOUSE: "Casa",
-                      VILLA: "Villa",
-                      COMMERCIAL: "Commerciale",
+                    const getTypeLabel = (type: string) => {
+                      const types: { [key: string]: string } = {
+                        APARTMENT: "Appartamento",
+                        HOUSE: "Casa",
+                        VILLA: "Villa",
+                        COMMERCIAL: "Commerciale",
+                      };
+                      return types[type] || type;
                     };
-                    return types[type] || type;
-                  };
 
-                  const content = `
+                    const content = `
                     <div style="max-width: 300px; padding: 10px;">
                       <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold; color: #203129;">
                         ${property.title}
@@ -189,8 +215,8 @@ export default function GoogleMap({
                       </div>
                       <p style="margin: 0 0 8px 0; font-size: 18px; font-weight: bold; color: #10c03e;">
                         €${property.price.toLocaleString()}${
-                    property.status === "FOR_RENT" ? "/mese" : ""
-                  }
+                      property.status === "FOR_RENT" ? "/mese" : ""
+                    }
                       </p>
                       <div style="display: flex; gap: 12px; margin-bottom: 8px; font-size: 14px; color: #666;">
                         ${
@@ -203,7 +229,11 @@ export default function GoogleMap({
                             ? `<span>🚿 ${property.bathrooms}</span>`
                             : ""
                         }
-                        ${property.area ? `<span>📐 ${property.area}m²</span>` : ""}
+                        ${
+                          property.area
+                            ? `<span>📐 ${property.area}m²</span>`
+                            : ""
+                        }
                       </div>
                       <p style="margin: 0 0 12px 0; color: #666; font-size: 13px; line-height: 1.4;">
                         ${
@@ -211,10 +241,10 @@ export default function GoogleMap({
                             ? property.description.substring(0, 100)
                             : ""
                         }${
-                    property.description && property.description.length > 100
-                      ? "..."
-                      : ""
-                  }
+                      property.description && property.description.length > 100
+                        ? "..."
+                        : ""
+                    }
                       </p>
                       <div style="border-top: 1px solid #e5e7eb; padding-top: 8px;">
                         <p style="margin: 0; font-size: 12px; color: #666;">
@@ -229,54 +259,76 @@ export default function GoogleMap({
                     </div>
                   `;
 
-                  infoWindow.setContent(content);
-                  infoWindow.open(map, marker);
+                    infoWindow.setContent(content);
+                    infoWindow.open(map, marker);
+                  }
+                } catch (clickError) {
+                  console.error("Error handling marker click:", clickError);
                 }
-              } catch (clickError) {
-                console.error('Error handling marker click:', clickError);
-              }
-            });
+              });
 
-            newMarkers.push(marker);
-          } catch (markerError) {
-            console.error('Error creating marker for property:', property.id, markerError);
+              newMarkers.push(marker);
+            } catch (markerError) {
+              console.error(
+                "Error creating marker for property:",
+                property.id,
+                markerError
+              );
+            }
+          }
+        });
+
+        // Update refs and state safely
+        if (mountedRef.current) {
+          markersRef.current = newMarkers;
+          setMarkers(newMarkers);
+
+          // Optimize bounds fitting - only if we have markers and map is visible
+          if (newMarkers.length > 0 && isMapVisible) {
+            try {
+              const bounds = new google.maps.LatLngBounds();
+              newMarkers.forEach((marker) => {
+                const position = marker.getPosition();
+                if (position) bounds.extend(position);
+              });
+
+              // Use fitBounds with padding to reduce API calls
+              map.fitBounds(bounds, {
+                top: 50,
+                right: 50,
+                bottom: 50,
+                left: 50,
+              });
+
+              // Ensure minimum zoom level with a single listener
+              const listener = google.maps.event.addListenerOnce(
+                map,
+                "idle",
+                () => {
+                  if (map.getZoom() && map.getZoom()! > 15) {
+                    map.setZoom(15);
+                  }
+                }
+              );
+            } catch (boundsError) {
+              console.warn("Error fitting bounds:", boundsError);
+            }
           }
         }
-      });
-
-      // Update refs and state safely
-      if (mountedRef.current) {
-        markersRef.current = newMarkers;
-        setMarkers(newMarkers);
-
-        // Optimize bounds fitting - only if we have markers and map is visible
-        if (newMarkers.length > 0 && isMapVisible) {
-          try {
-            const bounds = new google.maps.LatLngBounds();
-            newMarkers.forEach((marker) => {
-              const position = marker.getPosition();
-              if (position) bounds.extend(position);
-            });
-
-            // Use fitBounds with padding to reduce API calls
-            map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
-
-            // Ensure minimum zoom level with a single listener
-            const listener = google.maps.event.addListenerOnce(map, "idle", () => {
-              if (map.getZoom() && map.getZoom()! > 15) {
-                map.setZoom(15);
-              }
-            });
-          } catch (boundsError) {
-            console.warn('Error fitting bounds:', boundsError);
-          }
-        }
+      } catch (error) {
+        console.error("Error updating markers:", error);
+        setError("Failed to update map markers");
       }
-    } catch (error) {
-      console.error('Error updating markers:', error);
-      setError('Failed to update map markers');
-    }
-  }, [map, selectedProperty, onMarkerClick, infoWindow, isMapVisible, clearMarkers]);
+    },
+    [
+      map,
+      selectedProperty,
+      onMarkerClick,
+      infoWindow,
+      isMapVisible,
+      clearMarkers,
+    ]
+  );
 
   // Memoize the map options to prevent unnecessary re-renders
   const mapOptions = useMemo(
@@ -311,24 +363,31 @@ export default function GoogleMap({
   );
 
   // Debounced marker update to reduce API calls
-  const updateMarkersDebounced = useCallback((newProperties: Property[]) => {
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current);
-    }
-    
-    debounceTimeoutRef.current = setTimeout(() => {
-      if (mountedRef.current) {
-        updateMarkers(newProperties);
+  const updateMarkersDebounced = useCallback(
+    (newProperties: Property[]) => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
       }
-    }, 300);
-  }, [updateMarkers]);
+
+      debounceTimeoutRef.current = setTimeout(() => {
+        if (mountedRef.current) {
+          updateMarkers(newProperties);
+        }
+      }, 300);
+    },
+    [updateMarkers]
+  );
 
   // Initialize Google Maps with improved error handling
   useEffect(() => {
     mountedRef.current = true;
-    
+
     const initMap = async () => {
-      if (!mapRef.current || !googleMapsLoader.isGoogleMapsLoaded() || mapInitializedRef.current) {
+      if (
+        !mapRef.current ||
+        !googleMapsLoader.isGoogleMapsLoaded() ||
+        mapInitializedRef.current
+      ) {
         return;
       }
 
@@ -358,7 +417,7 @@ export default function GoogleMap({
       } catch (error) {
         console.error("Error initializing Google Maps:", error);
         if (mountedRef.current) {
-          setError('Failed to initialize map');
+          setError("Failed to initialize map");
           setIsInitializing(false);
         }
       }
@@ -377,20 +436,20 @@ export default function GoogleMap({
         console.error("Failed to load Google Maps:", error);
         if (mountedRef.current) {
           setIsInitializing(false);
-          setError('Failed to load Google Maps');
+          setError("Failed to load Google Maps");
         }
       });
 
     // Cleanup on component unmount
     return () => {
       mountedRef.current = false;
-      
+
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }
-      
+
       clearMarkers();
-      
+
       if (map) {
         googleMapsLoader.unregisterMapInstance(map);
       }
@@ -427,7 +486,7 @@ export default function GoogleMap({
           map.setZoom(14);
         }
       } catch (error) {
-        console.warn('Error centering map on selected property:', error);
+        console.warn("Error centering map on selected property:", error);
       }
     }
   }, [map, selectedProperty, isMapVisible]);
@@ -442,7 +501,7 @@ export default function GoogleMap({
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
           <div className="text-center">
             <p className="text-red-600 mb-4">⚠️ {error}</p>
-            <Button 
+            <Button
               onClick={() => {
                 setError(null);
                 setIsInitializing(true);
@@ -494,7 +553,7 @@ export default function GoogleMap({
                   left: 50,
                 });
               } catch (error) {
-                console.warn('Error fitting bounds for all properties:', error);
+                console.warn("Error fitting bounds for all properties:", error);
               }
             }
           }}
@@ -530,4 +589,3 @@ export default function GoogleMap({
     </div>
   );
 }
-

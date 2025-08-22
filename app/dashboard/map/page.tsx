@@ -59,7 +59,7 @@ interface Property {
 }
 
 export default function MapPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [properties, setProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(
@@ -76,8 +76,13 @@ export default function MapPage() {
   });
 
   const { getTodayUsage, getMonthlyEstimate } = useGoogleMapsUsage();
-  const userRole = (session?.user as any)?.role || "CUSTOMER";
+  
+  // Only access user role when session is loaded
+  const userRole = status === "loading" ? "CUSTOMER" : (session?.user as any)?.role || "CUSTOMER";
   const isAdmin = userRole === "ADMIN";
+
+  // Debug session state
+  console.log("MapPage Session Debug:", { status, session, userRole, isAdmin });
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -150,6 +155,15 @@ export default function MapPage() {
   };
 
   if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#10c03e]"></div>
+      </div>
+    );
+  }
+
+  // Show loading while session is being fetched
+  if (status === "loading") {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#10c03e]"></div>

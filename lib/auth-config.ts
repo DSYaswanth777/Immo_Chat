@@ -43,47 +43,68 @@ export const authConfig: NextAuthOptions = {
       }
     })
   ],
-  session: { strategy: "jwt" },
+  session: { 
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
+  },
   pages: { signIn: "/auth/login", error: "/auth/error" },
   debug: process.env.NODE_ENV === "development" && process.env.NEXTAUTH_DEBUG === "true",
 
   // --- Secure cookies & proxy fix ---
-  useSecureCookies: true,
+  useSecureCookies: process.env.NODE_ENV === "production",
   cookies: {
     sessionToken: {
-      name: `__Secure-next-auth.session-token`,
+      name: process.env.NODE_ENV === "production" 
+        ? `__Secure-next-auth.session-token`
+        : `next-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
       },
     },
   },
 
   callbacks: {
     async jwt({ token, user, account }) {
-      if (user) {
-        token.id = user.id
-        token.role = (user as any).role
-      }
+      try {
+        if (user) {
+          token.id = user.id
+          token.role = (user as any).role
+        }
 
-      if (account?.provider === "google" && user?.email) {
-        const dbUser = await prisma.user.findUnique({ where: { email: user.email } })
-        if (dbUser) token.role = dbUser.role
+        if (account?.provider === "google" && user?.email) {
+          const dbUser = await prisma.user.findUnique({ where: { email: user.email } })
+          if (dbUser) token.role = dbUser.role
+        }
+        return token
+      } catch (error) {
+        console.error("JWT callback error:", error)
+        return token
       }
-      return token
     },
     async session({ session, token }) {
-      if (token && session.user) {
-        (session.user as any).id = token.id as string
-        (session.user as any).role = token.role as string
+      try {
+        if (token && session.user) {
+          (session.user as any).id = token.id as string
+          (session.user as any).role = token.role as string
+        }
+        return session
+      } catch (error) {
+        console.error("Session callback error:", error)
+        return session
       }
-      return session
     },
     async signIn({ user, account }) {
-      console.log("SignIn callback triggered:", { provider: account?.provider, email: user?.email, userId: user?.id })
-      return true
+      try {
+        console.log("SignIn callback triggered:", { provider: account?.provider, email: user?.email, userId: user?.id })
+        return true
+      } catch (error) {
+        console.error("SignIn callback error:", error)
+        return false
+      }
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
