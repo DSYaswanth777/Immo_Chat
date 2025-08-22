@@ -1,0 +1,8 @@
+[
+  {
+    "id": "deploy-immochat",
+    "execute-command": "/root/Immo_Chat/deploy.sh",
+    "command-working-directory": "/root/Immo_Chat",
+    "response-message": "Deploying immochat..."
+  }
+]
