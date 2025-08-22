@@ -12,7 +12,7 @@ import GoogleMap from "@/components/dashboard/google-map";
 import { PropertyCard } from "@/components/dashboard/property-card";
 import { useGoogleMapsUsage } from "@/lib/google-maps-usage-tracker";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import Link from "next/link"
 
 interface Property {
   id: string;
