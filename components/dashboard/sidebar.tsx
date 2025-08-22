@@ -5,19 +5,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  Home,
-  Building2,
-  Users,
-  Settings,
-  Map,
-  Plus,
-  Menu,
-  X,
-  User,
-  Lock,
-  KeyRound,
-} from "lucide-react";
+import { Building2, Users, Map, Plus, Menu, X, User, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
