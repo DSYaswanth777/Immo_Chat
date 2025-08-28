@@ -715,13 +715,7 @@ export default function ImmochatLanding() {
       <section className="py-20 relative overflow-hidden">
         {/* Background with overlay */}
         <div className="absolute inset-0">
-          <Image
-            src="/images/modern-office-signup.jpg"
-            alt="Modern Office Background"
-            width={1920}
-            height={800}
-            className="w-full h-full object-cover"
-          />
+
           <div className="absolute inset-0 bg-gradient-to-r from-white/85 to-emerald-50/90"></div>
         </div>
 
