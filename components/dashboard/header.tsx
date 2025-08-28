@@ -114,7 +114,7 @@ export function Header() {
         {/* Right Side Actions */}
         <div className="flex items-center space-x-6 ml-auto">
           {/* Notifications */}
-          <Button
+          {/* <Button
             variant="ghost"
             size="sm"
             className="relative h-10 w-10 rounded-xl bg-white/50 hover:bg-emerald-50 border border-emerald-200/50 shadow-sm transition-all duration-300 hover:shadow-md"
@@ -123,7 +123,7 @@ export function Header() {
               <MessageSquare className="h-5 w-5 text-emerald-600" />
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse"></div>
             </div>
-          </Button>
+          </Button> */}
 
           {/* User Menu */}
           <DropdownMenu>
