@@ -27,7 +27,7 @@ A comprehensive real estate platform built with Next.js, featuring user manageme
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - MySQL database
 - Google OAuth credentials
 - Google Maps API key
@@ -35,22 +35,26 @@ A comprehensive real estate platform built with Next.js, featuring user manageme
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd immochat
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
 Edit `.env.local` with your configuration:
+
 ```env
 # Database
 DATABASE_URL="mysql://username:password@localhost:3306/immochat"
@@ -64,16 +68,18 @@ GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
 
 # Google Maps API
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="your-google-maps-api-key"
+GOOGLE_MAPS_API_KEY="your-google-maps-api-key"
 ```
 
 4. Set up the database:
+
 ```bash
 npx prisma generate
 npx prisma db push
 ```
 
 5. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -121,10 +127,12 @@ The application uses the following main models:
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/signin` - Sign in
 - `POST /api/auth/signout` - Sign out
 
 ### Users
+
 - `GET /api/users` - Get all users (Admin only)
 - `POST /api/users` - Create user (Admin only)
 - `GET /api/users/[id]` - Get user by ID
@@ -132,6 +140,7 @@ The application uses the following main models:
 - `DELETE /api/users/[id]` - Delete user (Admin only)
 
 ### Properties
+
 - `GET /api/properties` - Get all properties (with filters)
 - `POST /api/properties` - Create property
 - `GET /api/properties/[id]` - Get property by ID
@@ -141,12 +150,14 @@ The application uses the following main models:
 - `DELETE /api/properties/[id]/favorite` - Remove from favorites
 
 ### Inquiries
+
 - `GET /api/inquiries` - Get inquiries
 - `POST /api/inquiries` - Create inquiry
 
 ## User Roles
 
 ### Admin
+
 - Full access to all features
 - User management
 - View all properties and inquiries
@@ -154,6 +165,7 @@ The application uses the following main models:
 - System administration
 
 ### Customer
+
 - Manage own properties
 - View property map
 - Save favorites
@@ -165,10 +177,12 @@ The application uses the following main models:
 For testing purposes, you can use these demo credentials:
 
 **Admin User:**
+
 - Email: `admin@immochat.com`
 - Password: `admin123`
 
 **Customer User:**
+
 - Email: `customer@immochat.com`
 - Password: `customer123`
 
@@ -202,6 +216,7 @@ For testing purposes, you can use these demo credentials:
 ### Other Platforms
 
 The application can be deployed to any platform that supports Next.js:
+
 - Netlify
 - Railway
 - DigitalOcean App Platform

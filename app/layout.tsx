@@ -26,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="it">
-      <body className={openSans.className}>
+      <body className={`${openSans.className} bg-white text-gray-800`}>
         <Providers>
           {children}
           <ClientToaster position="top-right" />

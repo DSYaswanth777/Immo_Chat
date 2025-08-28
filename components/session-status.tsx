@@ -10,7 +10,7 @@ export function SessionStatus() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50">
+    <div className="">
       {/* <div>Status: {status}</div>
       <div>User: {session?.user?.email || "None"}</div>
       <div>Role: {(session?.user as any)?.role || "None"}</div> */}

@@ -96,42 +96,61 @@ export function HomepageHeader() {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel className="font-normal">
+                <DropdownMenuContent
+                  className="w-56 bg-white/95 backdrop-blur-md border border-slate-200 shadow-xl"
+                  align="end"
+                  forceMount
+                >
+                  <DropdownMenuLabel className="font-normal bg-slate-50/80 rounded-lg m-1 p-3">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">
+                      <p className="text-sm font-semibold leading-none text-slate-900">
                         {session.user?.name || "User"}
                       </p>
-                      <p className="text-xs leading-none text-muted-foreground">
+                      <p className="text-xs leading-none text-slate-600 font-medium">
                         {session.user?.email}
                       </p>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuSeparator className="bg-slate-200" />
+                  <DropdownMenuItem
+                    asChild
+                    className="hover:bg-slate-50 cursor-pointer"
+                  >
                     <Link
                       href="/dashboard/properties"
-                      className="cursor-pointer"
+                      className="flex items-center text-slate-700 font-medium"
                     >
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       <span>Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/profile" className="cursor-pointer">
+                  <DropdownMenuItem
+                    asChild
+                    className="hover:bg-slate-50 cursor-pointer"
+                  >
+                    <Link
+                      href="/dashboard/profile"
+                      className="flex items-center text-slate-700 font-medium"
+                    >
                       <User className="mr-2 h-4 w-4" />
                       <span>Profilo</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/settings" className="cursor-pointer">
+                  <DropdownMenuItem
+                    asChild
+                    className="hover:bg-slate-50 cursor-pointer"
+                  >
+                    <Link
+                      href="/dashboard/settings"
+                      className="flex items-center text-slate-700 font-medium"
+                    >
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Impostazioni</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-slate-200" />
                   <DropdownMenuItem
-                    className="cursor-pointer text-red-600 focus:text-red-600"
+                    className="cursor-pointer text-red-600 focus:text-red-600 hover:bg-red-50 font-medium"
                     onClick={() => signOut({ callbackUrl: "/" })}
                   >
                     <LogOut className="mr-2 h-4 w-4" />

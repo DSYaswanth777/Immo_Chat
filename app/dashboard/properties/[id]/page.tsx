@@ -171,17 +171,17 @@ export default function ViewPropertyPage({
 
   useEffect(() => {
     if (!id) return;
-    
+
     const fetchProperty = async () => {
       try {
         setLoading(true);
         setError(null);
         const response = await fetch(`/api/properties/${id}`);
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
         setProperty(data);
       } catch (err) {
@@ -272,7 +272,9 @@ export default function ViewPropertyPage({
             {error || "Proprietà non trovata"}
           </h2>
           <p className="text-gray-600 mb-6">
-            {error ? "Si è verificato un errore durante il caricamento." : "La proprietà che stai cercando non esiste."}
+            {error
+              ? "Si è verificato un errore durante il caricamento."
+              : "La proprietà che stai cercando non esiste."}
           </p>
           <div className="flex gap-3 justify-center">
             <Link href="/dashboard/properties">
@@ -282,9 +284,7 @@ export default function ViewPropertyPage({
               </Button>
             </Link>
             {error && (
-              <Button onClick={() => window.location.reload()}>
-                Riprova
-              </Button>
+              <Button onClick={() => window.location.reload()}>Riprova</Button>
             )}
           </div>
         </div>
@@ -316,7 +316,9 @@ export default function ViewPropertyPage({
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge className={`${getStatusColor(property.status)} font-medium`}>
+                  <Badge
+                    className={`${getStatusColor(property.status)} font-medium`}
+                  >
                     {getStatusLabel(property.status)}
                   </Badge>
                   <Badge variant="outline" className="font-medium">
@@ -325,7 +327,9 @@ export default function ViewPropertyPage({
                   <div className="text-2xl font-bold text-emerald-600">
                     €{property.price.toLocaleString()}
                     {property.status === "FOR_RENT" && (
-                      <span className="text-sm text-gray-500 font-normal">/mese</span>
+                      <span className="text-sm text-gray-500 font-normal">
+                        /mese
+                      </span>
                     )}
                   </div>
                 </div>
@@ -333,7 +337,11 @@ export default function ViewPropertyPage({
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button onClick={sharePropertyLocation} variant="outline" className="bg-white">
+              <Button
+                onClick={sharePropertyLocation}
+                variant="outline"
+                className="bg-white"
+              >
                 <MapPin className="h-4 w-4 mr-2" />
                 Condividi Posizione
               </Button>
@@ -358,28 +366,36 @@ export default function ViewPropertyPage({
               {property.bedrooms && (
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
                   <Bed className="h-6 w-6 mx-auto mb-2 text-emerald-600" />
-                  <div className="text-2xl font-bold text-gray-900">{property.bedrooms}</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {property.bedrooms}
+                  </div>
                   <div className="text-sm text-gray-600">Camere</div>
                 </Card>
               )}
               {property.bathrooms && (
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
                   <Bath className="h-6 w-6 mx-auto mb-2 text-blue-600" />
-                  <div className="text-2xl font-bold text-gray-900">{property.bathrooms}</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {property.bathrooms}
+                  </div>
                   <div className="text-sm text-gray-600">Bagni</div>
                 </Card>
               )}
               {property.area && (
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
                   <Square className="h-6 w-6 mx-auto mb-2 text-purple-600" />
-                  <div className="text-2xl font-bold text-gray-900">{property.area}</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {property.area}
+                  </div>
                   <div className="text-sm text-gray-600">m²</div>
                 </Card>
               )}
               {property.parking && (
                 <Card className="p-4 text-center hover:shadow-md transition-shadow">
                   <Car className="h-6 w-6 mx-auto mb-2 text-orange-600" />
-                  <div className="text-2xl font-bold text-gray-900">{property.parking}</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {property.parking}
+                  </div>
                   <div className="text-sm text-gray-600">Posti auto</div>
                 </Card>
               )}
@@ -395,7 +411,9 @@ export default function ViewPropertyPage({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700 leading-relaxed">{property.description}</p>
+                  <p className="text-gray-700 leading-relaxed">
+                    {property.description}
+                  </p>
                 </CardContent>
               </Card>
             )}
@@ -412,30 +430,49 @@ export default function ViewPropertyPage({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-3">
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Indirizzo</label>
-                      <p className="text-sm font-medium text-gray-900">{property.address}</p>
+                      <label className="text-sm font-medium text-gray-500">
+                        Indirizzo
+                      </label>
+                      <p className="text-sm font-medium text-gray-900">
+                        {property.address}
+                      </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Città</label>
-                      <p className="text-sm font-medium text-gray-900">{property.city}</p>
+                      <label className="text-sm font-medium text-gray-500">
+                        Città
+                      </label>
+                      <p className="text-sm font-medium text-gray-900">
+                        {property.city}
+                      </p>
                     </div>
                   </div>
                   <div className="space-y-3">
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Provincia</label>
-                      <p className="text-sm font-medium text-gray-900">{property.state}</p>
+                      <label className="text-sm font-medium text-gray-500">
+                        Provincia
+                      </label>
+                      <p className="text-sm font-medium text-gray-900">
+                        {property.state}
+                      </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">CAP</label>
-                      <p className="text-sm font-medium text-gray-900">{property.zipCode}</p>
+                      <label className="text-sm font-medium text-gray-500">
+                        CAP
+                      </label>
+                      <p className="text-sm font-medium text-gray-900">
+                        {property.zipCode}
+                      </p>
                     </div>
                   </div>
                 </div>
                 {property.latitude && property.longitude && (
                   <div className="pt-3 border-t">
-                    <label className="text-sm font-medium text-gray-500">Coordinate GPS</label>
+                    <label className="text-sm font-medium text-gray-500">
+                      Coordinate GPS
+                    </label>
                     <p className="text-sm text-gray-700 font-mono">
-                      {property.latitude.toFixed(6)}, {property.longitude.toFixed(6)}
+                      {property.latitude.toFixed(6)},{" "}
+                      {property.longitude.toFixed(6)}
                     </p>
                   </div>
                 )}
@@ -443,7 +480,8 @@ export default function ViewPropertyPage({
             </Card>
 
             {/* Features & Amenities */}
-            {(property.features?.length > 0 || property.amenities?.length > 0) && (
+            {(property.features?.length > 0 ||
+              property.amenities?.length > 0) && (
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <CardTitle>Caratteristiche e Servizi</CardTitle>
@@ -456,7 +494,11 @@ export default function ViewPropertyPage({
                       </label>
                       <div className="flex flex-wrap gap-2">
                         {property.features.map((feature, index) => (
-                          <Badge key={index} variant="secondary" className="px-3 py-1">
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="px-3 py-1"
+                          >
                             {feature}
                           </Badge>
                         ))}
@@ -470,7 +512,11 @@ export default function ViewPropertyPage({
                       </label>
                       <div className="flex flex-wrap gap-2">
                         {property.amenities.map((amenity, index) => (
-                          <Badge key={index} variant="outline" className="px-3 py-1">
+                          <Badge
+                            key={index}
+                            variant="outline"
+                            className="px-3 py-1"
+                          >
                             {amenity}
                           </Badge>
                         ))}
@@ -497,9 +543,13 @@ export default function ViewPropertyPage({
                   <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Users className="h-8 w-8 text-emerald-600" />
                   </div>
-                  <h3 className="font-semibold text-gray-900">{property.owner.name}</h3>
+                  <h3 className="font-semibold text-gray-900">
+                    {property.owner.name}
+                  </h3>
                   {property.owner.company && (
-                    <p className="text-sm text-gray-600">{property.owner.company}</p>
+                    <p className="text-sm text-gray-600">
+                      {property.owner.company}
+                    </p>
                   )}
                 </div>
                 <div className="space-y-3">
@@ -507,74 +557,102 @@ export default function ViewPropertyPage({
                     <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
                       Email
                     </label>
-                    <p className="text-sm text-gray-900">{property.owner.email}</p>
+                    <p className="text-sm text-gray-900">
+                      {property.owner.email}
+                    </p>
                   </div>
                   {property.owner.phone && (
                     <div>
                       <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
                         Telefono
                       </label>
-                      <p className="text-sm text-gray-900">{property.owner.phone}</p>
+                      <p className="text-sm text-gray-900">
+                        {property.owner.phone}
+                      </p>
                     </div>
                   )}
                 </div>
               </CardContent>
             </Card>
 
-
-
-            {/* Additional Details */}
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <CardTitle>Dettagli Aggiuntivi</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 gap-3">
-                  {property.floors && (
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Piani</span>
-                      <span className="text-sm font-medium">{property.floors}</span>
-                    </div>
-                  )}
-                  {property.yearBuilt && (
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Anno costruzione</span>
-                      <span className="text-sm font-medium">{property.yearBuilt}</span>
-                    </div>
-                  )}
-                  {property.lotSize && (
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Superficie terreno</span>
-                      <span className="text-sm font-medium">{property.lotSize}m²</span>
-                    </div>
-                  )}
+            {/* Enhanced Additional Details */}
+            <div className="relative bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 overflow-hidden hover:shadow-2xl transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-white/30"></div>
+              <div className="relative z-10">
+                <div className="p-6 border-b border-slate-200/50">
+                  <h2 className="text-xl font-semibold text-slate-800">
+                    Dettagli Aggiuntivi
+                  </h2>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="p-6">
+                  <div className="grid grid-cols-1 gap-4">
+                    {property.floors && (
+                      <div className="flex justify-between items-center bg-white/50 rounded-xl p-4 border border-slate-200/50">
+                        <span className="text-slate-600 font-medium">
+                          Piani
+                        </span>
+                        <span className="text-slate-900 font-bold">
+                          {property.floors}
+                        </span>
+                      </div>
+                    )}
+                    {property.yearBuilt && (
+                      <div className="flex justify-between items-center bg-white/50 rounded-xl p-4 border border-slate-200/50">
+                        <span className="text-slate-600 font-medium">
+                          Anno costruzione
+                        </span>
+                        <span className="text-slate-900 font-bold">
+                          {property.yearBuilt}
+                        </span>
+                      </div>
+                    )}
+                    {property.lotSize && (
+                      <div className="flex justify-between items-center bg-white/50 rounded-xl p-4 border border-slate-200/50">
+                        <span className="text-slate-600 font-medium">
+                          Superficie terreno
+                        </span>
+                        <span className="text-slate-900 font-bold">
+                          {property.lotSize}m²
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
 
-            {/* Timestamps */}
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <CalendarIcon className="h-5 w-5 mr-2 text-emerald-600" />
-                  Informazioni Temporali
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Creata il</span>
-                  <span className="text-sm font-medium">
-                    {new Date(property.createdAt).toLocaleDateString("it-IT")}
-                  </span>
+            {/* Enhanced Timestamps */}
+            <div className="relative bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 overflow-hidden hover:shadow-2xl transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-50/50 to-white/30"></div>
+              <div className="relative z-10">
+                <div className="p-6 border-b border-slate-200/50">
+                  <h2 className="text-xl font-semibold text-slate-800 flex items-center">
+                    <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
+                      <CalendarIcon className="h-5 w-5 text-white" />
+                    </div>
+                    Informazioni Temporali
+                  </h2>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Aggiornata il</span>
-                  <span className="text-sm font-medium">
-                    {new Date(property.updatedAt).toLocaleDateString("it-IT")}
-                  </span>
+                <div className="p-6 space-y-4">
+                  <div className="flex justify-between items-center bg-white/50 rounded-xl p-4 border border-slate-200/50">
+                    <span className="text-slate-600 font-medium">
+                      Creata il
+                    </span>
+                    <span className="text-slate-900 font-bold">
+                      {new Date(property.createdAt).toLocaleDateString("it-IT")}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center bg-white/50 rounded-xl p-4 border border-slate-200/50">
+                    <span className="text-slate-600 font-medium">
+                      Aggiornata il
+                    </span>
+                    <span className="text-slate-900 font-bold">
+                      {new Date(property.updatedAt).toLocaleDateString("it-IT")}
+                    </span>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
