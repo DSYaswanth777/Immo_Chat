@@ -499,7 +499,7 @@ export default function ImmochatLanding() {
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-emerald-100/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                 <div className="relative z-10">
-                  <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                  <div className="w-16 h-16">
                     <span className="text-4xl">🏢</span>
                   </div>
 
@@ -536,7 +536,7 @@ export default function ImmochatLanding() {
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-100/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                 <div className="relative z-10">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                  <div className="w-16 h-16">
                     <span className="text-3xl">🏠</span>
                   </div>
 
@@ -558,7 +558,7 @@ export default function ImmochatLanding() {
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-100/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                 <div className="relative z-10">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                  <div className="w-16 h-16">
                     <span className="text-3xl">👁️</span>
                   </div>
 
@@ -722,7 +722,7 @@ export default function ImmochatLanding() {
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="max-w-4xl mx-auto">
             <div className="mb-8">
-              <div className="w-20 h-20 bg-emerald-100 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+              <div className="w-20 h-20  backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-6 ">
                 <span className="text-5xl">🚀</span>
               </div>
               <h2 className="text-5xl font-bold text-gray-900 mb-6">
