@@ -32,7 +32,7 @@ export function HomepageHeader() {
             />
           </Link>
         </div>
-        <nav className="hidden md:flex items-center space-x-8">
+        {/* <nav className="hidden md:flex items-center space-x-8">
           <Link
             href="#servizi"
             className="text-[#203129] hover:text-[#10c03e] transition-colors"
@@ -57,7 +57,7 @@ export function HomepageHeader() {
           >
             Contatti
           </Link>
-        </nav>
+        </nav> */}
 
         <div className="flex items-center space-x-4">
           {status === "loading" ? (

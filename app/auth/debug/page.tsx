@@ -63,17 +63,14 @@ export default function AuthDebugPage() {
           name: "NextAuth Session",
           status: session ? "success" : "warning",
           message: session ? "Session available" : "No active session",
-          details: session
-            ? JSON.stringify(session, null, 2)
-            : "Not logged in",
+          details: session ? JSON.stringify(session, null, 2) : "Not logged in",
         });
       } catch (error) {
         results.push({
           name: "NextAuth Session",
           status: "error",
           message: "Session check failed",
-          details:
-            error instanceof Error ? error.message : "Unknown error",
+          details: error instanceof Error ? error.message : "Unknown error",
         });
       }
 
@@ -86,13 +83,11 @@ export default function AuthDebugPage() {
           results.push({
             name: "Environment Variables",
             status:
-              data.envVars.googleClientId &&
-              data.envVars.googleClientSecret
+              data.envVars.googleClientId && data.envVars.googleClientSecret
                 ? "success"
                 : "error",
             message:
-              data.envVars.googleClientId &&
-              data.envVars.googleClientSecret
+              data.envVars.googleClientId && data.envVars.googleClientSecret
                 ? "Google OAuth credentials configured"
                 : "Missing Google OAuth credentials",
             details: `Google ID: ${
@@ -121,8 +116,7 @@ export default function AuthDebugPage() {
           name: "API Diagnostics",
           status: "error",
           message: "Cannot reach diagnostics API",
-          details:
-            error instanceof Error ? error.message : "Network error",
+          details: error instanceof Error ? error.message : "Network error",
         });
       }
 
@@ -148,8 +142,7 @@ export default function AuthDebugPage() {
           name: "Google OAuth Provider",
           status: "error",
           message: "Cannot check OAuth providers",
-          details:
-            error instanceof Error ? error.message : "Unknown error",
+          details: error instanceof Error ? error.message : "Unknown error",
         });
       }
     } catch (error) {
@@ -179,9 +172,7 @@ export default function AuthDebugPage() {
       if (result?.error) {
         toast.error(`Google Auth Error: ${result.error}`);
       } else {
-        toast.success(
-          "Google Auth test initiated - check console for details"
-        );
+        toast.success("Google Auth test initiated - check console for details");
       }
     } catch (error) {
       console.error("Test error:", error);
@@ -214,17 +205,11 @@ export default function AuthDebugPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "success":
-        return (
-          <Badge className="bg-green-100 text-green-800">Success</Badge>
-        );
+        return <Badge className="bg-green-100 text-green-800">Success</Badge>;
       case "error":
-        return (
-          <Badge className="bg-red-100 text-red-800">Error</Badge>
-        );
+        return <Badge className="bg-red-100 text-red-800">Error</Badge>;
       case "warning":
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800">Warning</Badge>
-        );
+        return <Badge className="bg-yellow-100 text-yellow-800">Warning</Badge>;
       default:
         return <Badge>Unknown</Badge>;
     }
@@ -363,12 +348,8 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret`}
                 <ul className="list-disc list-inside space-y-1 text-gray-700">
                   <li>Clear browser cookies and localStorage</li>
                   <li>Restart development server after env changes</li>
-                  <li>
-                    Check browser console for detailed error messages
-                  </li>
-                  <li>
-                    Verify database connection and user table schema
-                  </li>
+                  <li>Check browser console for detailed error messages</li>
+                  <li>Verify database connection and user table schema</li>
                 </ul>
               </div>
             </div>

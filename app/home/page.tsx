@@ -37,6 +37,7 @@ import {
   Building,
   Users2,
   Briefcase,
+  Building2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -77,17 +78,17 @@ export default function ImmochatLanding() {
               </div>
 
               <h1 className="text-5xl font-bold mb-8 leading-tight">
-                Fai Crescere la Tua{" "}
+                🚀 Gestisci il tuo
                 <span className="bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">
-                  Agenzia Immobiliare
+                  Affari immobiliari
                 </span>{" "}
-                con WhatsApp
+                Più intelligente
               </h1>
 
               <p className="text-xl mb-10 text-gray-600 leading-relaxed">
-                Connettiti istantaneamente con i clienti, gestisci le
-                valutazioni immobiliari e chiudi più contratti attraverso la
-                piattaforma di messaggistica più popolare d'Italia.
+                Una piattaforma moderna dove le agenzie immobiliari si
+                registrano, mostrano i loro immobili e gestiscono tutto da
+                un'unica dashboard intuitiva.
               </p>
 
               {/* Enhanced CTA buttons */}
@@ -97,34 +98,32 @@ export default function ImmochatLanding() {
                     size="lg"
                     className="group bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 hover:scale-105"
                   >
-                    <Play className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" />
-                    Inizia Prova Gratuita
+                    <span className="text-xl mr-3">🏠</span>
+                    Crea il Tuo Account
                     <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50 bg-white/80 backdrop-blur-sm px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                >
-                  <Globe className="w-5 h-5 mr-3" />
-                  Guarda Demo
-                </Button>
+                <Link href="/dashboard/properties">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50 bg-white/80 backdrop-blur-sm px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  >
+                    <span className="text-xl mr-3">📅</span>
+                    Accedi alla Dashboard
+                  </Button>
+                </Link>
               </div>
 
               {/* Trust indicators */}
               <div className="flex items-center space-x-8 text-sm text-gray-600">
                 <div className="flex items-center space-x-2">
                   <Shield className="w-5 h-5 text-emerald-600" />
-                  <span>Sicuro e Affidabile</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Award className="w-5 h-5 text-emerald-600" />
-                  <span>Certificato GDPR</span>
+                  <span>Sicuro & Affidabile</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Clock className="w-5 h-5 text-emerald-600" />
-                  <span>Supporto 24/7</span>
+                  <span>24/7 Support</span>
                 </div>
               </div>
             </div>
@@ -133,14 +132,12 @@ export default function ImmochatLanding() {
               <div className="relative z-10">
                 {/* Floating elements positioned on top of the image */}
                 <div className="absolute -top-6 -left-6 z-20 w-24 h-24 bg-emerald-100 rounded-2xl flex items-center justify-center shadow-lg animate-bounce">
-                  <MessageCircle className="w-12 h-12 text-emerald-600" />
+                  <Building2 className="w-12 h-12 text-emerald-600" />
                 </div>
-                <div className="absolute -bottom-6 -right-6 z-20 w-24 h-24 bg-blue-100 rounded-2xl flex items-center justify-center shadow-lg animate-bounce delay-300">
+                <div className="absolute -bottom-6 right-12 z-20 w-24 h-24 bg-blue-100 rounded-2xl flex items-center justify-center shadow-lg animate-bounce delay-300">
                   <BarChart3 className="w-12 h-12 text-blue-600" />
                 </div>
-                <div className="absolute top-1/2 -right-12 z-20 w-20 h-20 bg-purple-100 rounded-2xl flex items-center justify-center shadow-lg animate-pulse">
-                  <Star className="w-10 h-10 text-purple-600" />
-                </div>
+
 
                 <Image
                   src="/images/hero-real-estate-agent.jpg"
@@ -155,73 +152,8 @@ export default function ImmochatLanding() {
         </div>
       </section>
 
-      {/* Enhanced Stats Section */}
-      <section className="py-20 bg-gradient-to-br from-emerald-50 via-slate-50 to-white   relative overflow-hidden">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10"></div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">
-              La Piattaforma di Fiducia per Migliaia di Agenti
-            </h2>
-            <p className="text-xl text-dark">
-              Risultati concreti che parlano da soli
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm group-hover:scale-110 transition-transform">
-                <Users2 className="w-10 h-10 text-white" />
-              </div>
-              <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">
-                60K+
-              </div>
-              <div className="text-dark font-medium">Agenti Attivi</div>
-            </div>
-
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm group-hover:scale-110 transition-transform">
-                <Building className="w-10 h-10 text-white" />
-              </div>
-              <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">
-                1M+
-              </div>
-              <div className="text-dark font-medium">
-                Immobili Valutati
-              </div>
-            </div>
-
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm group-hover:scale-110 transition-transform">
-                <HeartHandshake className="w-10 h-10 text-white" />
-              </div>
-              <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">
-                95%
-              </div>
-              <div className="text-dark font-medium">
-                Soddisfazione Clienti
-              </div>
-            </div>
-
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm group-hover:scale-110 transition-transform">
-                <Clock className="w-10 h-10 text-white" />
-              </div>
-              <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">
-                24/7
-              </div>
-              <div className="text-dark font-medium">
-                Supporto Disponibile
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Enhanced Services Section */}
-      <section id="servizi" className="py-24 bg-white relative">
+      {/* <section id="servizi" className="py-24 bg-white relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
             <div className="flex items-center justify-center space-x-2 mb-6">
@@ -239,8 +171,8 @@ export default function ImmochatLanding() {
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
               Tutto quello che ti serve per gestire la tua attività immobiliare
-              in modo efficiente attraverso l'integrazione WhatsApp più avanzata
-              del mercato
+              in modo efficiente attraverso la piattaforma più avanzata del
+              mercato
             </p>
           </div>
 
@@ -249,18 +181,19 @@ export default function ImmochatLanding() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -translate-y-16 translate-x-16"></div>
 
               <CardHeader className="relative z-10">
-                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <Home className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg text-4xl">
+                  🏠
                 </div>
                 <CardTitle className="text-2xl text-gray-900 mb-4">
-                  Valutazione Immobili
+                  Gestione Immobili
                 </CardTitle>
                 <CardDescription className="text-gray-600 text-base leading-relaxed">
-                  Valutazioni immobiliari istantanee e precise inviate
-                  direttamente ai clienti via WhatsApp con reportistica
-                  professionale
+                  Sistema completo di gestione immobili con valutazioni
+                  istantanee e report professionali consegnati direttamente
+                  nella tua dashboard
                 </CardDescription>
               </CardHeader>
+
               <CardContent className="relative z-10">
                 <div className="mb-6 rounded-xl overflow-hidden shadow-lg">
                   <Image
@@ -310,14 +243,14 @@ export default function ImmochatLanding() {
 
               <CardHeader className="relative z-10">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <MessageCircle className="w-10 h-10 text-white" />
+                  <span className="text-4xl">💬</span>
                 </div>
                 <CardTitle className="text-2xl text-gray-900 mb-4">
                   Comunicazione Clienti
                 </CardTitle>
                 <CardDescription className="text-gray-600 text-base leading-relaxed">
-                  Comunicazione semplificata e automatizzata con i clienti
-                  attraverso WhatsApp Business con risposte intelligenti
+                  Comunicazione clienti semplificata e risposte automatiche con
+                  capacità intelligenti di condivisione immobili
                 </CardDescription>
               </CardHeader>
               <CardContent className="relative z-10">
@@ -369,7 +302,7 @@ export default function ImmochatLanding() {
 
               <CardHeader className="relative z-10">
                 <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <BarChart3 className="w-10 h-10 text-white" />
+                  <span className="text-4xl">📊</span>
                 </div>
                 <CardTitle className="text-2xl text-gray-900 mb-4">
                   Analisi di Mercato
@@ -424,192 +357,9 @@ export default function ImmochatLanding() {
             </Card>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      {/* Modernistic Features Section - Enhanced Bento Grid */}
-      <section id="caratteristiche" className="py-20 relative overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-[#203129] mb-6">
-              Perché Scegliere{" "}
-              <span className="bg-gradient-to-r from-[#10c03e] to-emerald-500 bg-clip-text text-transparent">
-                Immochat
-              </span>
-              ?
-            </h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Costruito specificamente per i professionisti immobiliari italiani
-              con tecnologie all'avanguardia
-            </p>
-          </div>
-
-          <div className="grid grid-cols-12 gap-6">
-            {/* Professional Agent Image - Large Bento */}
-            <div className="col-span-12 lg:col-span-7 relative bg-white/70 backdrop-blur-md rounded-3xl p-0 shadow-2xl border border-white/50 overflow-hidden">
-              <div className="relative h-full min-h-[400px]">
-                <Image
-                  src="/images/professional-agent.jpg"
-                  alt="Professionista Immobiliare"
-                  width={600}
-                  height={400}
-                  className="w-full h-full object-cover rounded-3xl"
-                />
-                {/* Overlay with Certification Info */}
-                <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white/50">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#10c03e] to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <Award className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-[#203129]">
-                        Certificazione Professionale
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        Oltre 10,000 agenti certificati
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Features Cards */}
-            <div className="col-span-12 lg:col-span-5 grid grid-cols-1 gap-6">
-              <div className="relative bg-white/70 backdrop-blur-md rounded-3xl p-6 shadow-2xl border border-white/50 overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-white/30 rounded-3xl"></div>
-                <div className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#10c03e] to-emerald-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform">
-                    <MapPin className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-[#203129] mb-3">
-                    Esperienza Mercato Locale
-                  </h3>
-                  <p className="text-gray-700 text-sm mb-4">
-                    Conoscenza approfondita dei mercati immobiliari italiani
-                  </p>
-                  <div className="flex gap-2">
-                    <Badge className="bg-emerald-100/80 text-[#10c03e] text-xs">
-                      20+ Regioni
-                    </Badge>
-                    <Badge className="bg-blue-100/80 text-blue-700 text-xs">
-                      110+ Province
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative bg-white/70 backdrop-blur-md rounded-3xl p-6 shadow-2xl border border-white/50 overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-white/30 rounded-3xl"></div>
-                <div className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform">
-                    <Users className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-[#203129] mb-3">
-                    Gestione Relazioni Clienti
-                  </h3>
-                  <p className="text-gray-700 text-sm mb-4">
-                    CRM integrato con WhatsApp Business
-                  </p>
-                  <div className="flex gap-2">
-                    <Badge className="bg-purple-100/80 text-purple-700 text-xs">
-                      CRM Integrato
-                    </Badge>
-                    <Badge className="bg-green-100/80 text-green-700 text-xs">
-                      Auto-Response
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
       {/* Benefits Grid - Bento Style */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="relative bg-white/70 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 overflow-hidden group text-center hover:scale-[1.02] transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-white/30 rounded-3xl"></div>
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300">
-                  <Shield className="w-8 h-8 text-white" />
-                </div>
-                <h4 className="text-xl font-bold text-[#203129] mb-3">
-                  Sicurezza Garantita
-                </h4>
-                <p className="text-gray-700">
-                  Protezione dati GDPR compliant con crittografia end-to-end
-                </p>
-              </div>
-            </div>
-
-            <div className="relative bg-white/70 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 overflow-hidden group text-center hover:scale-[1.02] transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-white/30 rounded-3xl"></div>
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300">
-                  <Zap className="w-8 h-8 text-white" />
-                </div>
-                <h4 className="text-xl font-bold text-[#203129] mb-3">
-                  Setup Veloce
-                </h4>
-                <p className="text-gray-700">
-                  Configurazione in meno di 5 minuti con integrazione automatica
-                </p>
-              </div>
-            </div>
-
-            <div className="relative bg-white/70 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 overflow-hidden group text-center hover:scale-[1.02] transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-white/30 rounded-3xl"></div>
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300">
-                  <Clock className="w-8 h-8 text-white" />
-                </div>
-                <h4 className="text-xl font-bold text-[#203129] mb-3">
-                  Supporto 24/7
-                </h4>
-                <p className="text-gray-700">
-                  Team di esperti sempre disponibile per assistenza
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section - Bento Style */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="relative bg-white/70 backdrop-blur-md rounded-3xl p-12 shadow-2xl border border-white/50 overflow-hidden text-center">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-white/30 to-blue-50/30 rounded-3xl"></div>
-            <div className="relative z-10 max-w-3xl mx-auto">
-              <h2 className="text-4xl font-bold text-[#203129] mb-4">
-                Pronto a Trasformare la Tua Attività Immobiliare?
-              </h2>
-              <p className="text-xl text-gray-700 mb-8">
-                Unisciti a migliaia di agenti immobiliari di successo in tutta
-                Italia che stanno già utilizzando Immochat
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/auth/signup">
-                  <Button
-                    size="lg"
-                    className="bg-gradient-to-r from-[#10c03e] to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl shadow-xl"
-                  >
-                    Inizia la Tua Prova Gratuita
-                  </Button>
-                </Link>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-emerald-200 text-[#203129] hover:bg-emerald-50 px-8 py-4 rounded-2xl"
-                >
-                  Prenota una Demo
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* How It Works - Bento Grid */}
       <section id="come-funziona" className="py-20">
@@ -619,8 +369,7 @@ export default function ImmochatLanding() {
               Come{" "}
               <span className="bg-gradient-to-r from-[#10c03e] to-emerald-500 bg-clip-text text-transparent">
                 Funziona
-              </span>{" "}
-              Immochat
+              </span>
             </h2>
             <p className="text-xl text-gray-700">
               Semplice, veloce ed efficace in soli 3 passaggi
@@ -635,11 +384,10 @@ export default function ImmochatLanding() {
                   <span className="text-white font-bold">1</span>
                 </div>
                 <h3 className="text-xl font-bold text-[#203129] mb-4">
-                  Registrati e Configura
+                  Registra la Tua Agenzia
                 </h3>
                 <p className="text-gray-700 mb-6">
-                  Crea il tuo account e collega WhatsApp Business alla
-                  piattaforma
+                  Iscriviti in pochi secondi e crea il tuo profilo professionale
                 </p>
                 <Image
                   src="/images/whatsapp-registration.jpg"
@@ -658,11 +406,10 @@ export default function ImmochatLanding() {
                   <span className="text-white font-bold">2</span>
                 </div>
                 <h3 className="text-xl font-bold text-[#203129] mb-4">
-                  Ricevi Richieste
+                  Aggiungi Immobili
                 </h3>
                 <p className="text-gray-700 mb-6">
-                  I clienti ti contattano via WhatsApp per valutazioni
-                  immobiliari
+                  Carica i tuoi annunci con, dettagli e valutazioni
                 </p>
                 <Image
                   src="/images/client-requests.jpg"
@@ -681,11 +428,11 @@ export default function ImmochatLanding() {
                   <span className="text-white font-bold">3</span>
                 </div>
                 <h3 className="text-xl font-bold text-[#203129] mb-4">
-                  Invia Valutazioni
+                  Gestisci Tutto in Un Posto
                 </h3>
                 <p className="text-gray-700 mb-6">
-                  Genera e invia report professionali istantaneamente via
-                  WhatsApp
+                  Visualizza gli immobili su mappa interattiva, traccia le
+                  conversazioni e condividi report istantaneamente
                 </p>
                 <Image
                   src="/images/report-delivery.jpg"
@@ -704,7 +451,328 @@ export default function ImmochatLanding() {
                 size="lg"
                 className="bg-gradient-to-r from-[#10c03e] to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl shadow-xl"
               >
-                Inizia Subito - È Gratuito
+                <span className="mr-2">📍</span>
+                Inizia Subito
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Join Us Section - Redesigned */}
+      <section className="py-32 bg-gradient-to-br from-emerald-50 via-white to-slate-50 relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-200/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl animate-pulse delay-300"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl animate-pulse delay-700"></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          {/* Header */}
+          <div className="text-center mb-20">
+            <div className="flex items-center justify-center mb-8">
+              <div className="w-16 h-1 bg-gradient-to-r from-transparent to-emerald-400 rounded-full"></div>
+              <div className="mx-4 px-6 py-3 bg-emerald-100 backdrop-blur-md rounded-full border border-emerald-300">
+                <span className="text-emerald-700 font-bold uppercase tracking-wider text-sm">
+                  ✨ PERCHÉ SCEGLIERCI ✨
+                </span>
+              </div>
+              <div className="w-16 h-1 bg-gradient-to-l from-transparent to-emerald-400 rounded-full"></div>
+            </div>
+            <h2 className="text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              Perché le Agenzie{" "}
+              <span className="bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-700 bg-clip-text text-transparent">
+                Ci Scelgono
+              </span>
+            </h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+              Registra la tua agenzia e inizia subito a gestire i tuoi immobili
+            </p>
+          </div>
+
+          {/* Features Grid - Bento Style */}
+          <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto mb-16">
+            {/* Feature 1 - Large Card */}
+            <div className="lg:row-span-2 group relative">
+              <div className="h-full bg-gradient-to-br from-white to-emerald-50 backdrop-blur-xl rounded-3xl p-10 border border-emerald-200 hover:border-emerald-300 transition-all duration-500 hover:scale-[1.02] shadow-2xl">
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-emerald-100/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <div className="relative z-10">
+                  <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                    <span className="text-4xl">🏢</span>
+                  </div>
+
+                  <h3 className="text-3xl font-bold text-gray-900 mb-6">
+                    Registrazione Agenzia
+                  </h3>
+
+                  <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+                    Registra la tua agenzia immobiliare in pochi minuti.
+                    Processo semplice e veloce per iniziare subito.
+                  </p>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center text-emerald-700">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full mr-4"></div>
+                      <span>Registrazione in 5 minuti</span>
+                    </div>
+                    <div className="flex items-center text-emerald-700">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full mr-4"></div>
+                      <span>Profilo agenzia professionale</span>
+                    </div>
+                    <div className="flex items-center text-emerald-700">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full mr-4"></div>
+                      <span>Accesso immediato alla piattaforma</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="group relative">
+              <div className="h-full bg-gradient-to-br from-white to-blue-50 backdrop-blur-xl rounded-3xl p-8 border border-blue-200 hover:border-blue-300 transition-all duration-500 hover:scale-[1.02] shadow-2xl">
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-100/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                    <span className="text-3xl">🏠</span>
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                    Inserimento Immobili
+                  </h3>
+
+                  <p className="text-gray-700 leading-relaxed">
+                    Carica e gestisci i tuoi immobili con foto, descrizioni e
+                    dettagli in modo semplice e veloce.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="group relative">
+              <div className="h-full bg-gradient-to-br from-white to-purple-50 backdrop-blur-xl rounded-3xl p-8 border border-purple-200 hover:border-purple-300 transition-all duration-500 hover:scale-[1.02] shadow-2xl">
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-100/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                    <span className="text-3xl">👁️</span>
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                    Visualizza Immobili
+                  </h3>
+
+                  <p className="text-gray-700 leading-relaxed">
+                    Esplora tutti gli immobili disponibili con ricerca avanzata
+                    e visualizzazione su mappa interattiva.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center">
+            <div className="inline-flex flex-col items-center">
+              <Link href="/auth/signup">
+                <Button
+                  size="lg"
+                  className="group bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-700 hover:from-emerald-700 hover:via-emerald-600 hover:to-emerald-800 text-white font-bold px-12 py-6 rounded-2xl shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 hover:scale-110 text-lg border-2 border-emerald-400"
+                >
+                  <span className="mr-4 text-xl">🎯</span>
+                  Inizia Gratuitamente Ora
+                  <ArrowRight className="w-6 h-6 ml-4 group-hover:translate-x-2 transition-transform duration-300" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* Dashboard Section */}
+      <section className="py-24 bg-gradient-to-br from-slate-50 via-white to-emerald-50 relative overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="relative">
+              {/* Main Dashboard Image */}
+              <div className="relative z-10">
+                <Image
+                  src="https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                  alt="Dashboard Proprietà"
+                  width={600}
+                  height={400}
+                  className="rounded-3xl shadow-2xl"
+                />
+
+                {/* Floating UI Elements */}
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-white/50 flex items-center justify-center">
+                  <div className="text-center">
+                    <span className="text-2xl block">🗺️</span>
+                    <span className="text-xs font-medium text-gray-700">
+                      Maps
+                    </span>
+                  </div>
+                </div>
+
+                <div className="absolute -bottom-4 -left-4 w-32 h-20 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-white/50 flex items-center justify-center">
+                  <div className="text-center">
+                    <span className="text-lg block">🏠</span>
+                    <span className="text-xs font-medium text-gray-700">
+                      Proprietà Gestite
+                    </span>
+                  </div>
+                </div>
+
+                <div className="absolute top-1/3 -left-6 w-20 h-20 bg-emerald-500/90 backdrop-blur-md rounded-full shadow-xl flex items-center justify-center">
+                  <span className="text-2xl">💬</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-gray-900">
+              <h2 className="text-4xl font-bold mb-6">
+                📊 La Tua Dashboard{" "}
+                <span className="text-emerald-600">Completa</span>
+              </h2>
+              <p className="text-lg text-gray-700 mb-6">
+                Visualizza tutte le tue proprietà, conversazioni e valutazioni
+                in un’unica interfaccia chiara e moderna. Gestisci la tua
+                agenzia con la massima efficienza.
+              </p>
+              <ul className="space-y-3">
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 mr-2" />
+                  Gestione completa delle proprietà
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 mr-2" />
+                  Statistiche in tempo reale
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 mr-2" />
+                  Interfaccia semplice e veloce
+                </li>
+              </ul>
+              <Link href="/auth/signup">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-[#10c03e] to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl shadow-xl mt-5"
+                >
+                  📅 Accedi alla Dashboard
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Real-Time Map Section */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="order-2 lg:order-1 text-gray-900">
+              <h2 className="text-4xl font-bold mb-6">
+                Mappa Interattiva{" "}
+                <span className="text-emerald-600">Vista in Tempo Reale</span>
+              </h2>
+              <p className="text-lg text-gray-700 mb-6">
+                Naviga attraverso gli immobili direttamente su una mappa
+                aggiornata in tempo reale. Filtra per zona, prezzo e tipologia
+                per trovare esattamente quello che stai cercando.
+              </p>
+              <ul className="space-y-3">
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 mr-2" />
+                  Ricerca avanzata geolocalizzata
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 mr-2" />
+                  Aggiornamenti istantanei
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 mr-2" />
+                  Visualizzazione intuitiva
+                </li>
+              </ul>
+            </div>
+            <div className="order-1 lg:order-2 relative">
+              <Image
+                src="/images/maps.png"
+                alt="Mappa Interattiva"
+                width={600}
+                height={400}
+                className="rounded-3xl shadow-2xl"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Easy Signup Section */}
+      <section className="py-20 relative overflow-hidden">
+        {/* Background with overlay */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/modern-office-signup.jpg"
+            alt="Modern Office Background"
+            width={1920}
+            height={800}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/85 to-emerald-50/90"></div>
+        </div>
+
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-8">
+              <div className="w-20 h-20 bg-emerald-100 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                <span className="text-5xl">🚀</span>
+              </div>
+              <h2 className="text-5xl font-bold text-gray-900 mb-6">
+                Sei pronto a far crescere la{" "}
+                <span className="text-emerald-700">
+                  tua Agenzia Immobiliare?
+                </span>
+              </h2>
+              <p className="text-xl text-gray-700 mb-10 max-w-3xl mx-auto leading-relaxed">
+                Registra la tua agenzia su Immochat e gestisci subito annunci,
+                valutazioni e analisi di mercato dalla tua dashboard.
+              </p>
+            </div>
+
+            {/* Features Grid */}
+            <div className="grid md:grid-cols-2 gap-6 mb-12">
+              <div className="bg-white/80 backdrop-blur-md rounded-2xl p-6 text-gray-900 border border-emerald-200">
+                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">⚡</span>
+                </div>
+                <h3 className="font-bold mb-2">Dashboard Centralizzata</h3>
+                <p className="text-sm text-gray-700">
+                  Gestisci tutti i tuoi annunci da un’unica interfaccia
+                </p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-md rounded-2xl p-6 text-gray-900 border border-emerald-200">
+                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">📊</span>
+                </div>
+                <h3 className="font-bold mb-2">Analisi di Mercato</h3>
+                <p className="text-sm text-gray-700">
+                  Ottieni report e trend aggiornati in pochi secondi
+                </p>
+              </div>
+            </div>
+
+            <Link href="/auth/signup">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white hover:from-emerald-600 hover:to-emerald-800 px-12 py-6 rounded-2xl shadow-2xl hover:scale-105 transition-all duration-300 text-lg font-semibold"
+              >
+                <span className="mr-3">✅</span>
+                Registra la tua Agenzia Ora
+                <ArrowRight className="w-5 h-5 ml-3" />
               </Button>
             </Link>
           </div>
@@ -712,7 +780,7 @@ export default function ImmochatLanding() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20 bg-white">
+      {/* <section id="faq" className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-[#203129] mb-4">
@@ -758,16 +826,16 @@ export default function ImmochatLanding() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Testimonials - Bento Grid */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[#203129] mb-4">
-              Cosa Dicono i Nostri{" "}
+              Cosa Dicono le{" "}
               <span className="bg-gradient-to-r from-[#10c03e] to-emerald-500 bg-clip-text text-transparent">
-                Agenti
+                Agenzie
               </span>
             </h2>
           </div>
@@ -785,9 +853,9 @@ export default function ImmochatLanding() {
                   ))}
                 </div>
                 <p className="text-gray-700 mb-6 leading-relaxed">
-                  "Immochat ha rivoluzionato il modo in cui comunico con i
-                  clienti. Le valutazioni immobiliari sono ora istantanee e il
-                  mio tasso di chiusura è aumentato del 40%."
+                  "Finalmente una dashboard unica per gestire tutti i nostri
+                  annunci e conversazioni con i clienti. Ci fa risparmiare ore
+                  ogni settimana."
                 </p>
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-[#10c03e] to-emerald-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
@@ -796,7 +864,7 @@ export default function ImmochatLanding() {
                   <div>
                     <div className="font-bold text-[#203129]">Marco Rossi</div>
                     <div className="text-sm text-gray-600">
-                      Immobiliare Roma
+                      Agenzia Immobiliare, Roma
                     </div>
                   </div>
                 </div>
@@ -815,9 +883,8 @@ export default function ImmochatLanding() {
                   ))}
                 </div>
                 <p className="text-gray-700 mb-6 leading-relaxed">
-                  "L'integrazione WhatsApp è perfetta. I miei clienti adorano
-                  ricevere report immobiliari istantanei, e questo mi distingue
-                  dalla concorrenza."
+                  "La vista mappa è rivoluzionaria — ai clienti piace vedere
+                  tutti gli immobili in tempo reale."
                 </p>
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
@@ -827,7 +894,9 @@ export default function ImmochatLanding() {
                     <div className="font-bold text-[#203129]">
                       Giulia Bianchi
                     </div>
-                    <div className="text-sm text-gray-600">Immobili Milano</div>
+                    <div className="text-sm text-gray-600">
+                      Agenzia Immobiliare, Milano
+                    </div>
                   </div>
                 </div>
               </div>
@@ -869,107 +938,9 @@ export default function ImmochatLanding() {
       </section>
 
       {/* Footer - Modernistic Bento Style */}
-      <footer id="contatti" className="py-16 relative">
-        <div className="container  px-4">
-          <div className="relative bg-white/70 backdrop-blur-md rounded-3xl p-12 border border-white/50 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-white/30 to-blue-50/30 rounded-3xl"></div>
-            <div className="relative z-10">
-              <div className="grid md:grid-cols-4 gap-8 mb-8">
-                <div>
-                  <div className="mb-6">
-                    <Link href="/">
-                      <Image
-                        src="/images/logo.png"
-                        alt="Immochat Logo"
-                        width={120}
-                        height={30}
-                        className="rounded-lg"
-                      />
-                    </Link>
-                  </div>
-                  <p className="text-gray-700 mb-6 leading-relaxed">
-                    Potenziamo i professionisti immobiliari italiani con
-                    soluzioni innovative su WhatsApp.
-                  </p>
-                  <div className="flex space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#10c03e] to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer">
-                      <Phone className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer">
-                      <Mail className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-bold mb-4 text-[#203129]">
-                    Servizi
-                  </h3>
-                  <ul className="space-y-3 text-gray-700">
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Valutazione Immobili
-                    </li>
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Comunicazione Clienti
-                    </li>
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Analisi di Mercato
-                    </li>
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Generazione Lead
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-bold mb-4 text-[#203129]">
-                    Azienda
-                  </h3>
-                  <ul className="space-y-3 text-gray-700">
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Chi Siamo
-                    </li>
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Carriere
-                    </li>
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Stampa
-                    </li>
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Partner
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-bold mb-4 text-[#203129]">
-                    Supporto
-                  </h3>
-                  <ul className="space-y-3 text-gray-700">
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Centro Assistenza
-                    </li>
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Documentazione
-                    </li>
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Contatta Supporto
-                    </li>
-                    <li className="hover:text-[#10c03e] cursor-pointer transition-colors">
-                      Stato Sistema
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="border-t border-gray-200/50 pt-8 text-center text-gray-600">
-                <p>
-                  &copy; 2025 Immochat. Tutti i diritti riservati. | Privacy
-                  Policy | Termini di Servizio
-                </p>
-              </div>
-            </div>
-          </div>
+      <footer className="py-16 bg-white">
+        <div className="container px-4 text-center text-gray-600">
+          © 2025 Immochat. Tutti i diritti riservati.
         </div>
       </footer>
     </div>
