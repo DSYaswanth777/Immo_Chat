@@ -3,9 +3,21 @@
 import { useState, useEffect } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, AlertTriangle, Copy, Loader2 } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Copy,
+  Loader2,
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface DiagnosticResult {
@@ -19,21 +31,29 @@ export default function AuthDebugPage() {
   const [diagnostics, setDiagnostics] = useState<DiagnosticResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionInfo, setSessionInfo] = useState<any>(null);
+  const [origin, setOrigin] = useState(""); // store safe origin
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
+  }, []);
 
   const runDiagnostics = async () => {
     setIsLoading(true);
     const results: DiagnosticResult[] = [];
 
     try {
-      // Check environment variables on client side (what browser can see)
-      results.push({
-        name: "NEXTAUTH_URL",
-        status: window.location.origin.includes("localhost") ? "warning" : "success",
-        message: window.location.origin.includes("localhost") 
-          ? "Running on localhost - ensure NEXTAUTH_URL matches" 
-          : "Production environment detected",
-        details: `Current origin: ${window.location.origin}`
-      });
+      if (origin) {
+        results.push({
+          name: "NEXTAUTH_URL",
+          status: origin.includes("localhost") ? "warning" : "success",
+          message: origin.includes("localhost")
+            ? "Running on localhost - ensure NEXTAUTH_URL matches"
+            : "Production environment detected",
+          details: `Current origin: ${origin}`,
+        });
+      }
 
       // Test NextAuth session
       try {
@@ -43,44 +63,57 @@ export default function AuthDebugPage() {
           name: "NextAuth Session",
           status: session ? "success" : "warning",
           message: session ? "Session available" : "No active session",
-          details: session ? JSON.stringify(session, null, 2) : "Not logged in"
+          details: session
+            ? JSON.stringify(session, null, 2)
+            : "Not logged in",
         });
       } catch (error) {
         results.push({
           name: "NextAuth Session",
           status: "error",
           message: "Session check failed",
-          details: error instanceof Error ? error.message : "Unknown error"
+          details:
+            error instanceof Error ? error.message : "Unknown error",
         });
       }
 
       // Test API diagnostics endpoint
       try {
-        const response = await fetch('/api/auth/diagnostics');
+        const response = await fetch("/api/auth/diagnostics");
         const data = await response.json();
-        
+
         if (response.ok) {
           results.push({
             name: "Environment Variables",
-            status: data.envVars.googleClientId && data.envVars.googleClientSecret ? "success" : "error",
-            message: data.envVars.googleClientId && data.envVars.googleClientSecret 
-              ? "Google OAuth credentials configured" 
-              : "Missing Google OAuth credentials",
-            details: `Google ID: ${data.envVars.googleClientId ? "✓" : "✗"}, Secret: ${data.envVars.googleClientSecret ? "✓" : "✗"}`
+            status:
+              data.envVars.googleClientId &&
+              data.envVars.googleClientSecret
+                ? "success"
+                : "error",
+            message:
+              data.envVars.googleClientId &&
+              data.envVars.googleClientSecret
+                ? "Google OAuth credentials configured"
+                : "Missing Google OAuth credentials",
+            details: `Google ID: ${
+              data.envVars.googleClientId ? "✓" : "✗"
+            }, Secret: ${data.envVars.googleClientSecret ? "✓" : "✗"}`,
           });
 
           results.push({
             name: "Database Connection",
             status: data.database.connected ? "success" : "error",
-            message: data.database.connected ? "Database connected" : "Database connection failed",
-            details: data.database.error || "Connection successful"
+            message: data.database.connected
+              ? "Database connected"
+              : "Database connection failed",
+            details: data.database.error || "Connection successful",
           });
         } else {
           results.push({
             name: "API Diagnostics",
             status: "error",
             message: "Diagnostics API failed",
-            details: data.error || "Unknown API error"
+            details: data.error || "Unknown API error",
           });
         }
       } catch (error) {
@@ -88,37 +121,43 @@ export default function AuthDebugPage() {
           name: "API Diagnostics",
           status: "error",
           message: "Cannot reach diagnostics API",
-          details: error instanceof Error ? error.message : "Network error"
+          details:
+            error instanceof Error ? error.message : "Network error",
         });
       }
 
       // Test Google OAuth flow (without actually signing in)
       try {
-        const testResult = await fetch('/api/auth/providers');
+        const testResult = await fetch("/api/auth/providers");
         const providers = await testResult.json();
-        
-        const hasGoogle = providers.google || Object.values(providers).some((p: any) => p.name === "Google");
+
+        const hasGoogle =
+          providers.google ||
+          Object.values(providers).some((p: any) => p.name === "Google");
+
         results.push({
           name: "Google OAuth Provider",
           status: hasGoogle ? "success" : "error",
-          message: hasGoogle ? "Google provider configured" : "Google provider not found",
-          details: JSON.stringify(providers, null, 2)
+          message: hasGoogle
+            ? "Google provider configured"
+            : "Google provider not found",
+          details: JSON.stringify(providers, null, 2),
         });
       } catch (error) {
         results.push({
           name: "Google OAuth Provider",
           status: "error",
           message: "Cannot check OAuth providers",
-          details: error instanceof Error ? error.message : "Unknown error"
+          details:
+            error instanceof Error ? error.message : "Unknown error",
         });
       }
-
     } catch (error) {
       results.push({
         name: "General Diagnostics",
         status: "error",
         message: "Diagnostics failed",
-        details: error instanceof Error ? error.message : "Unknown error"
+        details: error instanceof Error ? error.message : "Unknown error",
       });
     }
 
@@ -129,18 +168,20 @@ export default function AuthDebugPage() {
   const testGoogleAuth = async () => {
     try {
       console.log("Testing Google authentication...");
-      
-      const result = await signIn("google", { 
+
+      const result = await signIn("google", {
         redirect: false,
-        callbackUrl: "/dashboard/properties"
+        callbackUrl: "/dashboard/properties",
       });
-      
+
       console.log("Test result:", result);
-      
+
       if (result?.error) {
         toast.error(`Google Auth Error: ${result.error}`);
       } else {
-        toast.success("Google Auth test initiated - check console for details");
+        toast.success(
+          "Google Auth test initiated - check console for details"
+        );
       }
     } catch (error) {
       console.error("Test error:", error);
@@ -155,23 +196,37 @@ export default function AuthDebugPage() {
 
   useEffect(() => {
     runDiagnostics();
-  }, []);
+  }, [origin]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "success": return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case "error": return <XCircle className="h-5 w-5 text-red-500" />;
-      case "warning": return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
-      default: return null;
+      case "success":
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case "error":
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      case "warning":
+        return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
+      default:
+        return null;
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "success": return <Badge className="bg-green-100 text-green-800">Success</Badge>;
-      case "error": return <Badge className="bg-red-100 text-red-800">Error</Badge>;
-      case "warning": return <Badge className="bg-yellow-100 text-yellow-800">Warning</Badge>;
-      default: return <Badge>Unknown</Badge>;
+      case "success":
+        return (
+          <Badge className="bg-green-100 text-green-800">Success</Badge>
+        );
+      case "error":
+        return (
+          <Badge className="bg-red-100 text-red-800">Error</Badge>
+        );
+      case "warning":
+        return (
+          <Badge className="bg-yellow-100 text-yellow-800">Warning</Badge>
+        );
+      default:
+        return <Badge>Unknown</Badge>;
     }
   };
 
@@ -200,11 +255,16 @@ export default function AuthDebugPage() {
         {diagnostics.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2">
             {diagnostics.map((diagnostic, index) => (
-              <Card key={index} className={`${
-                diagnostic.status === "error" ? "border-red-200" : 
-                diagnostic.status === "warning" ? "border-yellow-200" : 
-                "border-green-200"
-              }`}>
+              <Card
+                key={index}
+                className={`${
+                  diagnostic.status === "error"
+                    ? "border-red-200"
+                    : diagnostic.status === "warning"
+                    ? "border-yellow-200"
+                    : "border-green-200"
+                }`}
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg flex items-center gap-2">
@@ -241,7 +301,9 @@ export default function AuthDebugPage() {
           <Card>
             <CardHeader>
               <CardTitle>Current Session</CardTitle>
-              <CardDescription>Active NextAuth session information</CardDescription>
+              <CardDescription>
+                Active NextAuth session information
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="bg-gray-50 rounded-md p-4 text-sm font-mono">
@@ -256,38 +318,57 @@ export default function AuthDebugPage() {
         <Card>
           <CardHeader>
             <CardTitle>Quick Fix Instructions</CardTitle>
-            <CardDescription>Common solutions for Google OAuth issues</CardDescription>
+            <CardDescription>
+              Common solutions for Google OAuth issues
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4 text-sm">
               <div>
-                <h4 className="font-semibold text-gray-900 mb-2">1. Environment Variables</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">
+                  1. Environment Variables
+                </h4>
                 <p>Ensure your `.env` file has correct values:</p>
                 <div className="bg-gray-50 rounded-md p-3 mt-2 font-mono text-xs">
-{`NEXTAUTH_URL=${window.location.origin}
+                  {`NEXTAUTH_URL=${origin || "http://localhost:3000"}
 NEXTAUTH_SECRET=your-secret-here
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret`}
                 </div>
               </div>
-              
+
               <div>
-                <h4 className="font-semibold text-gray-900 mb-2">2. Google Cloud Console</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">
+                  2. Google Cloud Console
+                </h4>
                 <ul className="list-disc list-inside space-y-1 text-gray-700">
-                  <li>Authorized redirect URI: <code className="bg-gray-100 px-1 rounded">{window.location.origin}/api/auth/callback/google</code></li>
-                  <li>Enable Google+ API or Google Identity services</li>
+                  <li>
+                    Authorized redirect URI:{" "}
+                    <code className="bg-gray-100 px-1 rounded">
+                      {origin
+                        ? `${origin}/api/auth/callback/google`
+                        : "/api/auth/callback/google"}
+                    </code>
+                  </li>
+                  <li>Enable Google Identity services</li>
                   <li>Configure OAuth consent screen</li>
                   <li>Ensure client ID and secret match your .env file</li>
                 </ul>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-900 mb-2">3. Common Issues</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">
+                  3. Common Issues
+                </h4>
                 <ul className="list-disc list-inside space-y-1 text-gray-700">
                   <li>Clear browser cookies and localStorage</li>
                   <li>Restart development server after env changes</li>
-                  <li>Check browser console for detailed error messages</li>
-                  <li>Verify database connection and user table schema</li>
+                  <li>
+                    Check browser console for detailed error messages
+                  </li>
+                  <li>
+                    Verify database connection and user table schema
+                  </li>
                 </ul>
               </div>
             </div>
