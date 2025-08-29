@@ -225,52 +225,7 @@ export function PropertyCard({
               </div>
             </div>
 
-            {/* Enhanced stats and actions */}
-            <div className="flex items-center space-x-3">
-              {property._count && (
-                <div className="flex items-center space-x-2">
-                  <div className="flex items-center text-xs text-slate-500 bg-red-50 px-2 py-1 rounded-lg border border-red-200">
-                    <Heart className="h-3 w-3 mr-1 text-red-500" />
-                    <span className="font-semibold">
-                      {property._count.favorites || 0}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-xs text-slate-500 bg-blue-50 px-2 py-1 rounded-lg border border-blue-200">
-                    <MessageSquare className="h-3 w-3 mr-1 text-blue-500" />
-                    <span className="font-semibold">
-                      {property._count.inquiries || 0}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center space-x-1">
-                {property.owner.phone && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 hover:bg-emerald-100 hover:text-emerald-600 transition-colors rounded-lg"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.open(`tel:${property.owner.phone}`);
-                    }}
-                  >
-                    <Phone className="h-3 w-3" />
-                  </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 hover:bg-emerald-100 hover:text-emerald-600 transition-colors rounded-lg"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(`mailto:${property.owner.email}`);
-                  }}
-                >
-                  <Mail className="h-3 w-3" />
-                </Button>
-              </div>
-            </div>
+  
           </div>
         </div>
       </CardContent>

@@ -343,7 +343,7 @@ export default function GoogleMap({
         },
       ],
       // Optimize map options to reduce API calls
-      gestureHandling: "cooperative",
+      gestureHandling: "greedy", // Better for mobile
       zoomControl: true,
       mapTypeControl: false,
       scaleControl: false,
@@ -358,6 +358,8 @@ export default function GoogleMap({
       // Reduce unnecessary API calls
       maxZoom: 18,
       minZoom: 3,
+      // Better mobile performance
+      keyboardShortcuts: false,
     }),
     []
   );

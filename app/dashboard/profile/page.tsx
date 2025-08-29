@@ -194,7 +194,7 @@ export default function ProfilePage() {
 
         <div className="relative z-10 flex items-center space-x-6">
           <div className="relative">
-            <Avatar className="w-24 h-24 ring-4 ring-white/20 shadow-2xl">
+            <Avatar className="w-16 h-16 ring-4 ring-white/20 shadow-2xl">
               <AvatarImage src={profile.image || ""} alt={profile.name} />
               <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-2xl font-bold">
                 {profile.name.charAt(0).toUpperCase()}
@@ -207,7 +207,7 @@ export default function ProfilePage() {
 
           <div className="flex-1">
             <div className="flex items-center space-x-3 mb-2">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
                 {profile.name}
               </h1>
               <Badge
@@ -220,7 +220,7 @@ export default function ProfilePage() {
                 {profile.role}
               </Badge>
             </div>
-            <p className="text-slate-300 text-lg mb-4">{profile.email}</p>
+            <p className="text-slate-300 text-sm mb-4 ">{profile.email}</p>
 
             {/* Stats */}
             <div className="flex items-center space-x-6 text-sm">
@@ -228,16 +228,8 @@ export default function ProfilePage() {
                 <Building className="w-4 h-4" />
                 <span>{profile._count.properties} Proprietà</span>
               </div>
-              <div className="flex items-center space-x-2 text-blue-300">
-                <Mail className="w-4 h-4" />
-                <span>{profile._count.inquiries} Richieste</span>
-              </div>
-              <div className="flex items-center space-x-2 text-purple-300">
-                <User className="w-4 h-4" />
-                <span>
-                  Membro dal {new Date(profile.createdAt).getFullYear()}
-                </span>
-              </div>
+
+          
             </div>
           </div>
         </div>
@@ -264,7 +256,7 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent className="space-y-6 relative z-10">
             {/* Account Stats */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-xl">
                 <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center mx-auto mb-2">
                   <Building className="w-4 h-4 text-white" />
@@ -274,15 +266,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="text-xs text-emerald-600">Proprietà</div>
               </div>
-              <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl">
-                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <Mail className="w-4 h-4 text-white" />
-                </div>
-                <div className="text-2xl font-bold text-blue-700">
-                  {profile._count.inquiries}
-                </div>
-                <div className="text-xs text-blue-600">Richieste</div>
-              </div>
+    
               <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-xl">
                 <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-2">
                   <User className="w-4 h-4 text-white" />

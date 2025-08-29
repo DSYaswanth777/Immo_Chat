@@ -299,28 +299,28 @@ export default function PropertiesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-      <div className="p-6 space-y-6 max-w-7xl mx-auto">
+      <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
         {/* Modern Header */}
-        <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 text-white shadow-2xl overflow-hidden">
+        <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-6 md:p-8 text-white shadow-2xl overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-blue-500/10 to-purple-500/20"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-emerald-400/10 to-blue-400/10 rounded-full -translate-y-48 translate-x-48 blur-3xl"></div>
 
           <div className="relative z-10">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl ring-4 ring-white/20">
-                  <Building2 className="w-8 h-8 text-white" />
+              <div className="flex items-start md:items-center gap-4 flex-wrap">
+                <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl ring-4 ring-white/20 flex-shrink-0">
+                  <Building2 className="w-6 h-6 md:w-8 md:h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold text-white mb-2">
+                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
                     {isAdmin ? "Gestione Proprietà" : "Proprietà"}
                   </h1>
-                  <p className="text-slate-300 text-lg">
+                  <p className="text-base md:text-lg text-slate-300">
                     {isAdmin
                       ? "Gestisci tutte le proprietà della piattaforma"
                       : "Visualizza le proprietà disponibili"}
                   </p>
-                  <div className="flex items-center mt-3 space-x-4 text-sm text-emerald-300">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 text-sm text-emerald-300">
                     <div className="flex items-center bg-white/10 rounded-full px-3 py-1 backdrop-blur-sm">
                       <Building2 className="h-4 w-4 mr-2" />
                       <span className="font-medium">
@@ -391,14 +391,14 @@ export default function PropertiesPage() {
         {/* Enhanced Filters */}
         <div className="relative bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-slate-50/50 to-white/30"></div>
-          <div className="relative z-10 p-6">
-            <div className="flex items-center justify-between mb-6">
+          <div className="relative z-10 p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
               <h2 className="text-xl font-semibold text-slate-800 flex items-center">
                 <Filter className="h-5 w-5 mr-2 text-emerald-600" />
                 Filtri e Ricerca
               </h2>
               <div className="flex items-center space-x-3">
-                <span className="text-sm text-slate-500">Ordina per:</span>
+                <span className="text-sm text-slate-500 hidden sm:inline">Ordina per:</span>
                 <Select
                   value={sortBy}
                   onValueChange={(value: "date" | "price" | "title") =>
@@ -431,9 +431,9 @@ export default function PropertiesPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
               <div className="relative md:col-span-2">
-                <Search className="absolute left-3 top-1/4 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2  transform -translate-y-1/2 text-slate-400 h-4 w-4" />
                 <Input
                   type="search"
                   placeholder="Cerca per nome, città o indirizzo..."
@@ -494,10 +494,10 @@ export default function PropertiesPage() {
                 <Table>
                   <TableHeader className="sticky top-0 z-10 bg-white/90 backdrop-blur-md border-b border-slate-200">
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="font-semibold text-slate-700 py-4">
+                      <TableHead className="px-2 py-4 font-semibold text-slate-700 md:px-4">
                         Proprietà
                       </TableHead>
-                      <TableHead className="font-semibold text-slate-700">
+                      <TableHead className="hidden font-semibold text-slate-700 md:table-cell">
                         Tipo
                       </TableHead>
                       <TableHead className="font-semibold text-slate-700">
@@ -506,10 +506,10 @@ export default function PropertiesPage() {
                       <TableHead className="font-semibold text-slate-700">
                         Prezzo
                       </TableHead>
-                      <TableHead className="font-semibold text-slate-700">
+                      <TableHead className="hidden font-semibold text-slate-700 lg:table-cell">
                         Dettagli
                       </TableHead>
-                      <TableHead className="font-semibold text-slate-700">
+                      <TableHead className="hidden font-semibold text-slate-700 lg:table-cell">
                         Data
                       </TableHead>
                       <TableHead className="font-semibold text-slate-700 text-center">
@@ -528,17 +528,17 @@ export default function PropertiesPage() {
                           index % 2 === 0 ? "bg-white/50" : "bg-slate-50/30"
                         }`}
                       >
-                        <TableCell className="py-4">
+                        <TableCell className="p-2 md:p-4">
                           <div className="flex items-start space-x-3">
-                            <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-emerald-500/20">
-                              <Building2 className="h-7 w-7 text-white" />
+                            <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-emerald-500/20 flex-shrink-0">
+                              <Building2 className="w-5 h-5 md:h-7 md:w-7 text-white" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <div className="font-semibold text-slate-900 truncate text-lg">
+                              <div className="font-semibold text-slate-900 truncate text-base md:text-lg">
                                 {property.title}
                               </div>
-                              <div className="text-sm text-slate-600 flex items-center mt-1">
-                                <MapPin className="h-3 w-3 mr-1 text-slate-400" />
+                              <div className="text-xs md:text-sm text-slate-600 flex items-center mt-1">
+                                <MapPin className="h-3 w-3 mr-1 text-slate-400 flex-shrink-0" />
                                 <span className="truncate">
                                   {property.address}, {property.city}
                                 </span>
@@ -546,7 +546,7 @@ export default function PropertiesPage() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden p-2 md:table-cell md:p-4">
                           <Badge
                             variant="outline"
                             className="bg-white/70 border-slate-300 text-slate-700 font-medium shadow-sm"
@@ -554,7 +554,7 @@ export default function PropertiesPage() {
                             {getTypeLabel(property.type)}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="p-2 md:p-4">
                           <Badge
                             className={`${getStatusColor(
                               property.status
@@ -563,11 +563,11 @@ export default function PropertiesPage() {
                             {getStatusLabel(property.status)}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="p-2 md:p-4">
                           <div className="flex items-center">
                             <Euro className="h-4 w-4 text-emerald-600 mr-1" />
                             <div>
-                              <div className="font-bold text-emerald-600 text-xl">
+                              <div className="font-bold text-emerald-600 text-lg md:text-xl">
                                 {property.price.toLocaleString()}
                               </div>
                               {property.status === "FOR_RENT" && (
@@ -578,7 +578,7 @@ export default function PropertiesPage() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden p-2 lg:table-cell md:p-4">
                           <div className="flex flex-wrap gap-2">
                             {property.bedrooms && (
                               <div className="flex items-center bg-blue-50 px-2 py-1 rounded-lg text-xs border border-blue-200">
@@ -603,7 +603,7 @@ export default function PropertiesPage() {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden p-2 lg:table-cell md:p-4">
                           <div className="flex items-center text-sm text-slate-600">
                             <Calendar className="h-3 w-3 mr-1 text-slate-400" />
                             {new Date(property.createdAt).toLocaleDateString(
@@ -611,7 +611,7 @@ export default function PropertiesPage() {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="p-2 md:p-4">
                           <div className="flex items-center justify-center space-x-1">
                             <Button
                               variant="ghost"
@@ -638,7 +638,7 @@ export default function PropertiesPage() {
                           </div>
                         </TableCell>
                         {isAdmin && (
-                          <TableCell>
+                          <TableCell className="p-2 md:p-4">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button

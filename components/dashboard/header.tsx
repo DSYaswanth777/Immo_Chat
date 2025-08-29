@@ -83,36 +83,16 @@ export function Header() {
   }
 
   return (
-    <header className="bg-white/70 backdrop-blur-xl border-b border-emerald-200/50 shadow-lg px-6 py-4 relative overflow-hidden">
+    <header className="bg-white/70 backdrop-blur-xl border-b border-emerald-200/50 shadow-lg px-4 sm:px-6 py-4 relative overflow-hidden">
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-emerald-50/30 via-transparent to-blue-50/30 pointer-events-none"></div>
 
       <div className="flex items-center justify-between relative z-10">
         {/* Search Bar - Enhanced for Admin */}
-        {isAdmin && (
-          <div className="flex-1 max-w-lg">
-            <div className="relative group">
-              <Search className="absolute left-4 z-10 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
-       
-              <Input
-                type="search"
-                placeholder="Cerca proprietà, utenti, richieste..."
-                className="pl-12 pr-4 py-3 w-full bg-white/80 backdrop-blur-sm border-emerald-200/50 rounded-2xl shadow-sm transition-all duration-300 focus:shadow-lg focus:bg-white focus:border-emerald-400 hover:shadow-md"
-              />
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
-                <kbd className="px-2 py-1 text-xs text-emerald-600 bg-emerald-50 rounded border border-emerald-200">
-                  ⌘
-                </kbd>
-                <kbd className="px-2 py-1 text-xs text-emerald-600 bg-emerald-50 rounded border border-emerald-200">
-                  K
-                </kbd>
-              </div>
-            </div>
-          </div>
-        )}
+
 
         {/* Right Side Actions */}
-        <div className="flex items-center space-x-6 ml-auto">
+        <div className="flex items-center space-x-2 sm:space-x-4 ml-auto">
           {/* Notifications */}
           {/* <Button
             variant="ghost"
@@ -130,7 +110,7 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="relative h-12 w-auto px-3 rounded-2xl bg-white/50 hover:bg-emerald-50 border border-emerald-200/50 shadow-sm transition-all duration-300 hover:shadow-md group"
+                className="relative h-16 w-auto px-3 rounded-2xl bg-white/50 hover:bg-emerald-50 border-0 md:border border-emerald-200/50 shadow-none md:shadow-sm transition-all duration-300 hover:shadow-md group"
               >
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-10 w-10 ring-2 ring-emerald-200 ring-offset-2 ring-offset-white/50">

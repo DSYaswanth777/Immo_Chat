@@ -250,11 +250,11 @@ export default function UsersManagementPage() {
 
           <div className="relative z-10">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center gap-4 flex-wrap m-0">
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl ring-4 ring-white/20">
                   <Users className="w-8 h-8 text-white" />
                 </div>
-                <div>
+                <div className=" ">
                   <h1 className="text-4xl font-bold text-white mb-2">
                     Gestione Utenti
                   </h1>
@@ -286,9 +286,9 @@ export default function UsersManagementPage() {
                 Filtri e Ricerca
               </h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/4 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 md:top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
                 <Input
                   type="search"
                   placeholder="Cerca utenti..."
@@ -307,12 +307,12 @@ export default function UsersManagementPage() {
                   <SelectItem value="CUSTOMER">Customer</SelectItem>
                 </SelectContent>
               </Select>
-              <div className="flex items-center justify-center bg-gradient-to-r from-emerald-50 to-blue-50 rounded-xl p-4 border border-emerald-200/50">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-emerald-700">
+              <div className="flex items-center flex-row justify-center bg-gradient-to-r from-emerald-50 to-blue-50 rounded-xl p-1 border border-emerald-200/50">
+                <div className="text-center flex items-center flex-row justify-center gap-4">
+                  <div className="text-xl font-bold text-emerald-700">
                     {filteredUsers.length}
                   </div>
-                  <div className="text-sm text-emerald-600 font-medium">
+                  <div className="text-md text-emerald-600 font-medium">
                     utenti trovati
                   </div>
                 </div>
@@ -334,9 +334,9 @@ export default function UsersManagementPage() {
                   <TableHead className="font-semibold text-slate-700">
                     Ruolo
                   </TableHead>
-                  <TableHead className="font-semibold text-slate-700">
+                  {/* <TableHead className="font-semibold text-slate-700">
                     Azienda
-                  </TableHead>
+                  </TableHead> */}
                   <TableHead className="font-semibold text-slate-700">
                     Proprietà
                   </TableHead>
@@ -385,11 +385,11 @@ export default function UsersManagementPage() {
                         {user.role}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <div className="text-sm text-slate-700">
                         {user.company || "-"}
                       </div>
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>
                       <div className="flex items-center space-x-1">
                         <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>

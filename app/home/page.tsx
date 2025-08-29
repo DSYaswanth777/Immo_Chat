@@ -362,9 +362,9 @@ export default function ImmochatLanding() {
       {/* Benefits Grid - Bento Style */}
 
       {/* How It Works - Bento Grid */}
-      <section id="come-funziona" className="py-20">
+      <section id="come-funziona" className="py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-16">
             <h2 className="text-4xl font-bold text-[#203129] mb-4">
               Come{" "}
               <span className="bg-gradient-to-r from-[#10c03e] to-emerald-500 bg-clip-text text-transparent">
@@ -460,7 +460,7 @@ export default function ImmochatLanding() {
       </section>
 
       {/* Why Join Us Section - Redesigned */}
-      <section className="py-32 bg-gradient-to-br from-emerald-50 via-white to-slate-50 relative overflow-hidden">
+      <section className="py-12 md:py-32 bg-gradient-to-br from-emerald-50 via-white to-slate-50 relative overflow-hidden">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-200/20 rounded-full blur-3xl animate-pulse"></div>
@@ -593,7 +593,7 @@ export default function ImmochatLanding() {
         </div>
       </section>
       {/* Dashboard Section */}
-      <section className="py-24 bg-gradient-to-br from-slate-50 via-white to-emerald-50 relative overflow-hidden">
+      <section className="py-12 md:py-24 bg-gradient-to-br from-slate-50 via-white to-emerald-50 relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
@@ -670,7 +670,7 @@ export default function ImmochatLanding() {
       </section>
 
       {/* Real-Time Map Section */}
-      <section className="py-24 bg-white relative overflow-hidden">
+      <section className="py-12 md:py-24 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1 text-gray-900">
@@ -712,7 +712,7 @@ export default function ImmochatLanding() {
       </section>
 
       {/* Easy Signup Section */}
-      <section className="py-20 relative overflow-hidden">
+      <section className="py-12 md:py-20 relative overflow-hidden">
         {/* Background with overlay */}
         <div className="absolute inset-0">
 
@@ -823,9 +823,9 @@ export default function ImmochatLanding() {
       </section> */}
 
       {/* Testimonials - Bento Grid */}
-      <section className="py-20">
+      <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-16">
             <h2 className="text-4xl font-bold text-[#203129] mb-4">
               Cosa Dicono le{" "}
               <span className="bg-gradient-to-r from-[#10c03e] to-emerald-500 bg-clip-text text-transparent">

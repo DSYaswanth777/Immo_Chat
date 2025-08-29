@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ import {
   ChevronRight,
   Home,
   Settings,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -297,11 +298,15 @@ export function Sidebar() {
       {/* Footer */}
       {!collapsed && (
         <div className="relative p-4 border-t border-white/10">
-          <div className="text-center space-y-2">
-            <div className="flex items-center justify-center space-x-2 text-emerald-300">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium">Sistema Attivo</span>
+          <div className="text-center space-y-5">
+            <div className="flex justify-center items-center bg-red-600 rounded-lg py-3 cursor-pointer"       onClick={() => signOut({ callbackUrl: "/" })}>
+              <LogOut
+                className="mr-2 h-4 w-4 text-white"
+          
+              />
+              <p className="font-bold text-white">Esci</p>
             </div>
+
             <p className="text-xs text-white/50">
               © 2025 Immochat. Tutti i diritti riservati.
             </p>
@@ -340,20 +345,20 @@ export function Sidebar() {
       )}
 
       {/* Mobile Menu Button */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
+      <div className="md:hidden fixed top-8 left-4 z-50">
         <Button
           variant="outline"
           size="sm"
           className="bg-white/90 backdrop-blur-sm border-emerald-200 text-emerald-700 hover:bg-emerald-50 shadow-lg"
           onClick={() => setIsMobileMenuOpen(true)}
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-6 w-6" />
         </Button>
       </div>
 
       {/* Mobile Sidebar */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-40">
+        <div className="md:hidden fixed inset-0 z-50">
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsMobileMenuOpen(false)}

@@ -97,7 +97,7 @@ export function HomepageHeader() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-56 bg-white/95 backdrop-blur-md border border-slate-200 shadow-xl"
+                  className="w-60 bg-white/95 backdrop-blur-md border border-slate-200 shadow-xl"
                   align="end"
                   forceMount
                 >

@@ -79,7 +79,7 @@ export default function DashboardLayout({
       <Sidebar />
       <div
         className={cn(
-          "flex-1 flex flex-col overflow-hidden transition-all duration-300 relative z-10",
+          "flex-1 flex flex-col overflow-hidden transition-all duration-300 relative z-10 ",
           isSidebarCollapsed ? "md:ml-20" : "md:ml-72"
         )}
       >
